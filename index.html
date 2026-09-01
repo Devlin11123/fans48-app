@@ -5,76 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fans48 - Streaming & Top Up Cash Hub</title>
 
+<!-- BOOTSTRAP 5 & FONTAWESOME -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- FIREBASE SDK (ONLINE DATABASE) -->
+<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
 :root {
-    --primary-color:#e60012;
-    --primary-glow:rgba(230,0,18,.4);
-    --dark-bg:#0b0c10;
-    --card-bg:#151821;
-    --card-border:#262b3a;
-    --text-color:#ffffff;
-    --muted-color:#a0a5b5;
-    --accent-gold:#ffb703;
+    --primary-color: #e60012;
+    --dark-bg: #0b0c10;
+    --card-bg: #151821;
+    --card-border: #262b3a;
+    --text-color: #ffffff;
+    --accent-gold: #ffb703;
 }
 
 body {
     background-color: var(--dark-bg);
     color: var(--text-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: background-color .3s, color .3s;
     min-height: 100vh;
 }
 
-/* FIX LIGHT MODE */
-body.light-mode {
-    --dark-bg: #f8f9fa;
-    --card-bg: #ffffff;
-    --card-border: #dee2e6;
-    --text-color: #212529;
-    --muted-color: #6c757d;
+/* FIX STYLING MODAL & Z-INDEX */
+.modal-backdrop {
+    z-index: 1040 !important;
 }
 
-body.light-mode .navbar {
-    background: rgba(255, 255, 255, 0.95) !important;
+.modal {
+    z-index: 1050 !important;
 }
 
-body.light-mode .navbar-brand,
-body.light-mode .nav-link {
-    color: #212529 !important;
+.modal-content {
+    background-color: #151821 !important;
+    color: #ffffff !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
-body.light-mode .card,
-body.light-mode .modal-content {
-    background-color: var(--card-bg) !important;
-    color: var(--text-color) !important;
+.modal-header, .modal-footer {
     border-color: var(--card-border) !important;
-}
-
-body.light-mode .form-control,
-body.light-mode .form-select {
-    background-color: #ffffff !important;
-    color: #212529 !important;
-    border-color: #ced4da !important;
 }
 
 /* NAVBAR FIX */
 .navbar {
-    background: rgba(11, 12, 16, 0.95);
-    backdrop-filter: blur(12px);
+    background-color: #10121a !important;
     border-bottom: 1px solid var(--card-border);
     z-index: 1030;
 }
 
 .navbar-brand {
     font-weight: 800;
-    color: #fff !important;
+    color: #ffffff !important;
 }
 
 .navbar-brand span {
@@ -82,113 +68,50 @@ body.light-mode .form-select {
 }
 
 .nav-link {
-    color: var(--muted-color) !important;
+    color: #a0a5b5 !important;
     font-weight: 600;
-    padding: .5rem 1rem !important;
+    padding: 0.5rem 1rem !important;
     border-radius: 8px;
-    transition: all 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .nav-link:hover {
-    color: #fff !important;
-    background: rgba(255,255,255,.08);
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.05);
 }
 
 .nav-link.active {
-    color: #fff !important;
-    background: linear-gradient(135deg, var(--primary-color), #b3000e);
+    color: #ffffff !important;
+    background: var(--primary-color);
 }
 
-/* CARDS & UI */
+/* CARDS & UI ELEMENTS */
 .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    color: var(--text-color);
-    transition: .3s;
-}
-
-.hero-banner {
-    background: linear-gradient(135deg, rgba(230,0,18,0.2), rgba(15,18,25,0.9)), var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
-    padding: 40px 30px;
-}
-
-.topup-card {
-    position: relative;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    transition: .3s;
-    cursor: pointer;
-}
-
-.topup-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-gold);
-}
-
-.cash-badge {
-    background: linear-gradient(135deg, #1e2330, #13161f);
-    border: 1px solid var(--accent-gold);
-    color: var(--accent-gold);
-    font-weight: 700;
-    padding: 6px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-}
-
-/* FORM CONTROL FIX */
-.form-control, .form-select {
-    background-color: #151821 !important;
+    background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     color: #ffffff !important;
-    border-radius: 10px;
+    border-radius: 14px;
 }
 
-.form-control::placeholder {
-    color: #888888 !important;
+.form-control, .form-select {
+    background-color: #0b0c10 !important;
+    border: 1px solid var(--card-border) !important;
+    color: #ffffff !important;
 }
 
 .form-control:focus, .form-select:focus {
     border-color: var(--primary-color) !important;
-    box-shadow: 0 0 10px var(--primary-glow) !important;
+    box-shadow: 0 0 0 0.25rem rgba(230,0,18,0.25) !important;
 }
 
-.section-title {
-    border-left: 5px solid var(--primary-color);
-    padding-left: 12px;
-    margin-bottom: 24px;
-}
-
-/* MODAL FIX (PENTING AGAR TIDAK HILANG) */
-.modal {
-    z-index: 1055 !important;
-}
-
-.modal-backdrop {
-    z-index: 1050 !important;
-}
-
-.modal-content {
-    background-color: #151821 !important;
-    color: #ffffff !important;
-    border: 1px solid var(--card-border);
+.cash-badge {
+    background: #1e2330;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-weight: 700;
+    padding: 6px 14px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.badge-live {
-    background: var(--primary-color);
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .6; }
+    cursor: pointer;
 }
 
 .ratio-16x9 {
@@ -200,16 +123,17 @@ body.light-mode .form-select {
 
 .ratio-16x9 iframe {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border: 0;
 }
 
 .chat-box {
-    height: 350px;
+    height: 320px;
     overflow-y: auto;
-    background: #0e1017;
+    background-color: #0b0c10;
 }
 </style>
 </head>
@@ -217,76 +141,52 @@ body.light-mode .form-select {
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark">
 <div class="container">
 
 <a class="navbar-brand fs-4" href="javascript:void(0)" onclick="renderPage('home')">
     <i class="fa-solid fa-bolt text-danger me-2"></i>Fans<span>48</span>
 </a>
 
-<button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
-    <i class="fa-solid fa-bars text-white"></i> 
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
+    <span class="navbar-toggler-icon"></span>
 </button>
 
 <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
+        <li class="nav-item">
+            <a class="nav-link active" id="nav-home" onclick="renderPage('home')"><i class="fa-solid fa-house me-1"></i> Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-theater" onclick="renderPage('theater')"><i class="fa-solid fa-building-columns me-1"></i> Live Theater</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-topup" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash</a>
+        </li>
+        <li class="nav-item d-none" id="nav-admin-item">
+            <a class="nav-link text-danger fw-bold" id="nav-admin" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-1"></i> Admin Panel</a>
+        </li>
+    </ul>
 
-<ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
-    <li class="nav-item">
-        <a class="nav-link active" id="nav-home" href="javascript:void(0)" onclick="renderPage('home')">
-            <i class="fa-solid fa-house me-1"></i> Home
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="nav-theater" href="javascript:void(0)" onclick="renderPage('theater')">
-            <i class="fa-solid fa-building-columns me-1"></i> Live Theater
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="nav-member-live" href="javascript:void(0)" onclick="renderPage('memberLive')">
-            <i class="fa-solid fa-tower-broadcast me-1"></i> Live Member
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="nav-member" href="javascript:void(0)" onclick="renderPage('member')">
-            <i class="fa-solid fa-users me-1"></i> Member
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="nav-topup" href="javascript:void(0)" onclick="renderPage('topup')">
-            <i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash
-        </a>
-    </li>
-    <li class="nav-item d-none" id="nav-admin-item">
-        <a class="nav-link text-danger fw-bold" id="nav-admin" href="javascript:void(0)" onclick="renderPage('admin')">
-            <i class="fa-solid fa-user-shield me-1"></i> Admin Panel
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="nav-settings" href="javascript:void(0)" onclick="renderPage('settings')">
-            <i class="fa-solid fa-gear me-1"></i> Settings
-        </a>
-    </li>
-</ul>
-
-<div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
-
+    <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
 </div>
+
 </div>
 </nav>
 
-<!-- KONTEN UTAMA -->
+<!-- MAIN CONTENT CONTAINER -->
 <div class="container my-4" id="main-content"></div>
 
-<!-- AUTH MODAL (LOGIN & REGISTER) -->
-<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+<!-- AUTH MODAL -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
 
-      <div class="modal-header border-0">
+      <div class="modal-header">
         <h5 class="modal-title fw-bold" id="authTitle">
             <i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" onclick="closeAuthModal()"></button>
       </div>
 
       <div class="modal-body">
@@ -302,7 +202,7 @@ body.light-mode .form-select {
             <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" required>
           </div>
 
-          <button type="submit" class="btn btn-danger w-100 fw-bold mt-2" id="btnLoginSubmit">Masuk</button>
+          <button type="submit" class="btn btn-danger w-100 fw-bold mt-2">Masuk</button>
 
           <div class="text-center mt-3">
             <small>Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a></small>
@@ -331,7 +231,7 @@ body.light-mode .form-select {
             <input id="regPassword" type="password" class="form-control" placeholder="••••••••" required>
           </div>
 
-          <button type="submit" class="btn btn-warning text-dark w-100 fw-bold mt-2" id="btnRegSubmit">Buat Akun</button>
+          <button type="submit" class="btn btn-warning text-dark w-100 fw-bold mt-2">Buat Akun</button>
 
           <div class="text-center mt-3">
             <small>Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a></small>
@@ -350,7 +250,7 @@ body.light-mode .form-select {
 
       <div class="modal-header bg-dark">
         <h6 class="modal-title text-white" id="playerTitle">Streaming Player</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" onclick="closePlayer()"></button>
       </div>
 
       <div class="modal-body p-0">
@@ -361,11 +261,11 @@ body.light-mode .form-select {
             </div>
           </div>
 
-          <div class="col-lg-4">
+          <div class="col-lg-4 d-flex flex-column" style="background:#151821;">
             <div class="p-2 bg-dark border-bottom text-white">
               <i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
             </div>
-            <div class="chat-box p-3" id="chatContainer"></div>
+            <div class="chat-box p-3 flex-grow-1" id="chatContainer"></div>
             <form class="p-2 bg-dark d-flex gap-2" onsubmit="sendMessage(event)">
               <input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
               <button type="submit" class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
@@ -382,7 +282,7 @@ body.light-mode .form-select {
 
 <script>
 /* =========================================
-   1. FIREBASE CONFIG
+   1. KONFIGURASI FIREBASE DATABASE
 ========================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAnqW79drGUG_0jfqJaXOqy0uxPzoZJz-M",
@@ -401,7 +301,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 /* =========================================
-   2. GLOBAL STATE
+   2. DATA & GLOBAL STATE
 ========================================= */
 const DEFAULT_SUPERADMIN = {
     email: "admin@fans48.com",
@@ -444,25 +344,10 @@ let redeemCodes = [];
 let currentUser = JSON.parse(localStorage.getItem("fans48_session")) || null;
 let currentPage = "home";
 
-let settings = JSON.parse(localStorage.getItem("fans48_settings")) || {
-    theme: "dark"
-};
-
-const members = [
-    { stageName: "Freya", fullName: "Freyana Jayawardana", team: "New Era", img: "https://via.placeholder.com/300x400/e60012/FFFFFF?text=Freya" },
-    { stageName: "Christy", fullName: "Angelina Christy", team: "New Era", img: "https://via.placeholder.com/300x400/e60012/FFFFFF?text=Christy" }
-];
-
-let authModal, playerModal;
-
 /* =========================================
-   3. INITIALIZATION
+   3. INISIALISASI UTAMA
 ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
-    authModal = new bootstrap.Modal(document.getElementById("authModal"));
-    playerModal = new bootstrap.Modal(document.getElementById("playerModal"));
-
-    applySettings();
     updateAuthUI();
     renderPage('home');
     syncOnlineDatabase();
@@ -517,11 +402,24 @@ function saveUserToFirebase(userObj) {
 }
 
 /* =========================================
-   4. AUTHENTICATION & MODAL CONTROLLER
+   4. MODAL MANUAL CONTROLLER (MENCEGAH BUG UI)
 ========================================= */
-function openAuth() {
-    toggleAuth("login");
-    authModal.show();
+function openAuthModal() {
+    toggleAuth('login');
+    const modalEl = document.getElementById('authModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalEl);
+    }
+    modal.show();
+}
+
+function closeAuthModal() {
+    const modalEl = document.getElementById('authModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) {
+        modal.hide();
+    }
 }
 
 function toggleAuth(type) {
@@ -559,7 +457,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     currentUser = user;
     localStorage.setItem("fans48_session", JSON.stringify(currentUser));
     updateAuthUI();
-    authModal.hide();
+    closeAuthModal();
     toast("Login berhasil. Selamat datang " + user.name + "!", "success");
     renderPage(currentPage);
 });
@@ -597,7 +495,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         currentUser = newUser;
         localStorage.setItem("fans48_session", JSON.stringify(currentUser));
         updateAuthUI();
-        authModal.hide();
+        closeAuthModal();
         toast("Akun berhasil dibuat!", "success");
         renderPage("home");
     }).catch(err => {
@@ -614,7 +512,7 @@ function logout() {
 }
 
 /* =========================================
-   5. RENDER UI & ROUTING
+   5. ROUTING & TEMPLATE RENDERING
 ========================================= */
 function updateAuthUI() {
     const area = document.getElementById("userArea");
@@ -628,7 +526,7 @@ function updateAuthUI() {
 
     if (!currentUser) {
         area.innerHTML = `
-        <button class="btn btn-outline-danger fw-bold" onclick="openAuth()">
+        <button class="btn btn-danger fw-bold px-3" onclick="openAuthModal()">
             <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar
         </button>`;
         return;
@@ -641,7 +539,7 @@ function updateAuthUI() {
     </div>
 
     <div class="dropdown">
-        <button class="btn btn-dark border-secondary dropdown-toggle" data-bs-toggle="dropdown">
+        <button class="btn btn-dark border-secondary dropdown-toggle text-white" data-bs-toggle="dropdown">
             <i class="fa-solid fa-user-circle text-danger me-1"></i>
             ${escapeHTML(currentUser.name)}
         </button>
@@ -649,4 +547,63 @@ function updateAuthUI() {
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
             <li><span class="dropdown-item-text small text-muted">${escapeHTML(currentUser.username)}</span></li>
             <li><hr class="dropdown-divider"></li>
-       
+            ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
+            <li><a class="dropdown-item text-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
+        </ul>
+    </div>`;
+}
+
+function canAccessAdmin() {
+    return currentUser && (currentUser.role === "superadmin" || currentUser.role === "admin");
+}
+
+function renderPage(page) {
+    currentPage = page;
+    document.querySelectorAll(".nav-link").forEach(x => x.classList.remove("active"));
+    const activeNav = document.getElementById("nav-" + page);
+    if (activeNav) activeNav.classList.add("active");
+
+    const container = document.getElementById("main-content");
+
+    if (page === "home") container.innerHTML = getHomeHTML();
+    else if (page === "theater") container.innerHTML = getTheaterHTML();
+    else if (page === "topup") container.innerHTML = getTopupHTML();
+    else if (page === "admin") {
+        if (!canAccessAdmin()) {
+            toast("Akses ditolak!", "error");
+            renderPage("home");
+            return;
+        }
+        container.innerHTML = getAdminHTML();
+    }
+}
+
+function getHomeHTML() {
+    return `
+    <div class="p-5 mb-4 rounded-3 text-center text-lg-start" style="background: linear-gradient(135deg, rgba(230,0,18,0.2), #151821); border: 1px solid var(--card-border);">
+        <div class="container-fluid py-3">
+            <h1 class="display-5 fw-bold text-white mb-3">Selamat Datang di <span class="text-danger">Fans48</span></h1>
+            <p class="col-md-8 fs-5 text-muted">Platform terpadu untuk menonton tayangan langsung setlist theater idol favorit Anda.</p>
+            <div class="d-flex gap-2">
+                <button class="btn btn-danger btn-lg fw-bold px-4" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
+                <button class="btn btn-outline-warning btn-lg fw-bold px-4" onclick="renderPage('topup')"><i class="fa-solid fa-gift me-2"></i>Redeem Code</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function getTheaterHTML() {
+    return `
+    <div class="border-start border-4 border-danger ps-3 mb-4">
+        <h3 class="fw-bold mb-0">Live & Replay Theater</h3>
+        <small class="text-muted">Gunakan 1 Cash untuk membukanya secara permanen.</small>
+    </div>
+    <div class="row g-4">
+        ${theaterList.length ? theaterList.map(renderTheaterCard).join("") : '<p class="text-muted">Memuat data show...</p>'}
+    </div>`;
+}
+
+function renderTheaterCard(t) {
+    const unlocked = currentUser && currentUser.unlockedShows && currentUser.unlockedShows.includes(t.id);
+    return `
+    <
