@@ -19,112 +19,93 @@
     --dark-bg:#0b0c10;
     --card-bg:#151821;
     --card-border:#262b3a;
-    --text-color:#f1f1f1;
+    --text-color:#ffffff;
     --muted-color:#a0a5b5;
     --accent-gold:#ffb703;
 }
 
 body {
-    background:var(--dark-bg);
-    color:var(--text-color);
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-    transition:.3s;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color .3s, color .3s;
     min-height: 100vh;
 }
 
+/* FIX LIGHT MODE */
 body.light-mode {
-    --dark-bg:#f3f4f6;
-    --card-bg:#ffffff;
-    --card-border:#d9dce3;
-    --text-color:#171717;
-    --muted-color:#626975;
+    --dark-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --text-color: #212529;
+    --muted-color: #6c757d;
 }
 
 body.light-mode .navbar {
-    background:rgba(255,255,255,.9);
+    background: rgba(255, 255, 255, 0.95) !important;
 }
 
 body.light-mode .navbar-brand,
+body.light-mode .nav-link {
+    color: #212529 !important;
+}
+
 body.light-mode .card,
-body.light-mode .fw-bold,
-body.light-mode h1,
-body.light-mode h2,
-body.light-mode h3,
-body.light-mode h4,
-body.light-mode h5,
-body.light-mode h6 {
-    color:var(--text-color)!important;
+body.light-mode .modal-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-color: var(--card-border) !important;
 }
 
 body.light-mode .form-control,
 body.light-mode .form-select {
-    background:#fff!important;
-    color:#111!important;
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
 }
 
-body.light-mode .dropdown-menu {
-    background:#fff!important;
-}
-
-body.light-mode .dropdown-item {
-    color:#111!important;
-}
-
+/* NAVBAR FIX */
 .navbar {
-    background:rgba(11,12,16,.88);
-    backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--card-border);
+    background: rgba(11, 12, 16, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
     z-index: 1030;
 }
 
 .navbar-brand {
-    font-weight:800;
-    color:#fff!important;
+    font-weight: 800;
+    color: #fff !important;
 }
 
 .navbar-brand span {
-    color:var(--primary-color);
+    color: var(--primary-color);
 }
 
 .nav-link {
-    color:var(--muted-color)!important;
-    font-weight:600;
-    padding:.5rem 1rem!important;
-    border-radius:8px;
+    color: var(--muted-color) !important;
+    font-weight: 600;
+    padding: .5rem 1rem !important;
+    border-radius: 8px;
     transition: all 0.2s ease-in-out;
 }
 
 .nav-link:hover {
-    color:#fff!important;
-    background:rgba(255,255,255,.05);
+    color: #fff !important;
+    background: rgba(255,255,255,.08);
 }
 
 .nav-link.active {
-    color:#fff!important;
-    background:linear-gradient(135deg,var(--primary-color),#b3000e);
+    color: #fff !important;
+    background: linear-gradient(135deg, var(--primary-color), #b3000e);
 }
 
-#main-content {
-    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#main-content.page-hidden {
-    opacity: 0;
-    transform: translateY(12px);
-}
-
+/* CARDS & UI */
 .card {
-    background:var(--card-bg);
-    border:1px solid var(--card-border);
-    border-radius:16px;
-    color:var(--text-color);
-    transition:.3s;
-}
-
-.card:hover {
-    border-color:rgba(230,0,18,.5);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    color: var(--text-color);
+    transition: .3s;
 }
 
 .hero-banner {
@@ -134,196 +115,157 @@ body.light-mode .dropdown-item {
     padding: 40px 30px;
 }
 
-.feature-card {
-    height: 100%;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--primary-color);
-}
-
 .topup-card {
-    position:relative;
-    background:var(--card-bg);
-    border:1px solid var(--card-border);
-    border-radius:16px;
-    padding:20px;
-    text-align:center;
-    transition:.3s;
-    cursor:pointer;
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: .3s;
+    cursor: pointer;
 }
 
 .topup-card:hover {
-    transform:translateY(-5px);
-    border-color:var(--accent-gold);
-}
-
-.topup-card.popular {
-    border-color:var(--primary-color);
-}
-
-.badge-popular {
-    position:absolute;
-    top:0;
-    right:0;
-    background:var(--primary-color);
-    color:#fff;
-    font-size:.7rem;
-    font-weight:bold;
-    padding:4px 12px;
-    border-bottom-left-radius:10px;
+    transform: translateY(-5px);
+    border-color: var(--accent-gold);
 }
 
 .cash-badge {
-    background:linear-gradient(135deg,#1e2330,#13161f);
-    border:1px solid var(--accent-gold);
-    color:var(--accent-gold);
-    font-weight:700;
-    padding:6px 16px;
-    border-radius:30px;
-    cursor:pointer;
+    background: linear-gradient(135deg, #1e2330, #13161f);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
 }
 
-.form-control,
-.form-select {
-    background:#11131a!important;
-    border:1px solid var(--card-border)!important;
-    color:#fff!important;
-    border-radius:10px;
+/* FORM CONTROL FIX */
+.form-control, .form-select {
+    background-color: #151821 !important;
+    border: 1px solid var(--card-border) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
 }
 
-.form-control:focus,
-.form-select:focus {
-    border-color:var(--primary-color)!important;
-    box-shadow:0 0 10px var(--primary-glow)!important;
+.form-control::placeholder {
+    color: #888888 !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 10px var(--primary-glow) !important;
 }
 
 .section-title {
-    border-left:5px solid var(--primary-color);
-    padding-left:12px;
-    margin-bottom:24px;
+    border-left: 5px solid var(--primary-color);
+    padding-left: 12px;
+    margin-bottom: 24px;
+}
+
+/* MODAL FIX (PENTING AGAR TIDAK HILANG) */
+.modal {
+    z-index: 1055 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
 }
 
 .modal-content {
-    background:var(--card-bg);
-    color:var(--text-color);
-    border:1px solid var(--card-border);
-    border-radius:20px;
+    background-color: #151821 !important;
+    color: #ffffff !important;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .badge-live {
-    background:var(--primary-color);
-    animation:pulse 1.5s infinite;
+    background: var(--primary-color);
+    animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0%,100% {opacity:1}
-    50% {opacity:.6}
-}
-
-.member-img {
-    height:240px;
-    object-fit:cover;
+    0%, 100% { opacity: 1; }
+    50% { opacity: .6; }
 }
 
 .ratio-16x9 {
-    position:relative;
-    width:100%;
-    padding-top:56.25%;
-    background:#000;
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #000;
 }
 
 .ratio-16x9 iframe {
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    border:0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
 .chat-box {
-    height:350px;
-    overflow-y:auto;
-    background:#0e1017;
-}
-
-.settings-color {
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:3px solid transparent;
-    cursor:pointer;
-}
-
-.settings-color.active {
-    border-color:#fff;
-    box-shadow:0 0 0 2px #000;
+    height: 350px;
+    overflow-y: auto;
+    background: #0e1017;
 }
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg sticky-top">
 <div class="container">
 
-<a class="navbar-brand fs-4" href="#" onclick="renderPage('home')">
-<i class="fa-solid fa-bolt text-danger me-2"></i>
-Fans<span>48</span>
+<a class="navbar-brand fs-4" href="javascript:void(0)" onclick="renderPage('home')">
+    <i class="fa-solid fa-bolt text-danger me-2"></i>Fans<span>48</span>
 </a>
 
-<button class="navbar-toggler border-0 text-white" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
-<i class="fa-solid fa-bars"></i> 
+<button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
+    <i class="fa-solid fa-bars text-white"></i> 
 </button>
 
 <div class="collapse navbar-collapse" id="navbarNav">
 
-<ul class="navbar-nav me-auto gap-2 mt-2 mt-lg-0">
-
-<li class="nav-item">
-<a class="nav-link active" id="nav-home" href="#" onclick="renderPage('home')">
-<i class="fa-solid fa-house me-1"></i> Home
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" id="nav-theater" href="#" onclick="renderPage('theater')">
-<i class="fa-solid fa-building-columns me-1"></i> Live Theater
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" id="nav-member-live" href="#" onclick="renderPage('memberLive')">
-<i class="fa-solid fa-tower-broadcast me-1"></i> Live Member
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" id="nav-member" href="#" onclick="renderPage('member')">
-<i class="fa-solid fa-users me-1"></i> Member
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" id="nav-topup" href="#" onclick="renderPage('topup')">
-<i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash
-</a>
-</li>
-
-<li class="nav-item d-none" id="nav-admin-item">
-<a class="nav-link text-danger fw-bold" id="nav-admin" href="#" onclick="renderPage('admin')">
-<i class="fa-solid fa-user-shield me-1"></i> Admin Panel
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" id="nav-settings" href="#" onclick="renderPage('settings')">
-<i class="fa-solid fa-gear me-1"></i> Settings
-</a>
-</li>
-
+<ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
+    <li class="nav-item">
+        <a class="nav-link active" id="nav-home" href="javascript:void(0)" onclick="renderPage('home')">
+            <i class="fa-solid fa-house me-1"></i> Home
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-theater" href="javascript:void(0)" onclick="renderPage('theater')">
+            <i class="fa-solid fa-building-columns me-1"></i> Live Theater
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-member-live" href="javascript:void(0)" onclick="renderPage('memberLive')">
+            <i class="fa-solid fa-tower-broadcast me-1"></i> Live Member
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-member" href="javascript:void(0)" onclick="renderPage('member')">
+            <i class="fa-solid fa-users me-1"></i> Member
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-topup" href="javascript:void(0)" onclick="renderPage('topup')">
+            <i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash
+        </a>
+    </li>
+    <li class="nav-item d-none" id="nav-admin-item">
+        <a class="nav-link text-danger fw-bold" id="nav-admin" href="javascript:void(0)" onclick="renderPage('admin')">
+            <i class="fa-solid fa-user-shield me-1"></i> Admin Panel
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="nav-settings" href="javascript:void(0)" onclick="renderPage('settings')">
+            <i class="fa-solid fa-gear me-1"></i> Settings
+        </a>
+    </li>
 </ul>
 
 <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
@@ -332,124 +274,115 @@ Fans<span>48</span>
 </div>
 </nav>
 
+<!-- KONTEN UTAMA -->
 <div class="container my-4" id="main-content"></div>
 
-<!-- AUTH MODAL -->
+<!-- AUTH MODAL (LOGIN & REGISTER) -->
 <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content p-3">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
 
-<div class="modal-header border-0">
-<h5 class="modal-title fw-bold" id="authTitle">
-<i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun
-</h5>
-<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="authTitle">
+            <i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-<div class="modal-body">
+      <div class="modal-body">
+        <!-- FORM LOGIN -->
+        <form id="loginForm">
+          <div class="mb-3">
+            <label class="form-label">Username atau Email</label>
+            <input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
+          </div>
 
-<form id="loginForm">
-<div class="mb-3">
-<label class="form-label">Username atau Email</label>
-<input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
-</div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" required>
+          </div>
 
-<div class="mb-3">
-<label class="form-label">Password</label>
-<input id="loginPassword" type="password" class="form-control" required>
-</div>
+          <button type="submit" class="btn btn-danger w-100 fw-bold mt-2" id="btnLoginSubmit">Masuk</button>
 
-<button type="submit" class="btn btn-danger w-100 fw-bold" id="btnLoginSubmit">Masuk</button>
+          <div class="text-center mt-3">
+            <small>Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a></small>
+          </div>
+        </form>
 
-<div class="text-center mt-3">
-<small>
-Belum punya akun?
-<a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a>
-</small>
-</div>
-</form>
+        <!-- FORM REGISTER -->
+        <form id="registerForm" class="d-none">
+          <div class="mb-3">
+            <label class="form-label">Nama Lengkap</label>
+            <input id="regName" class="form-control" placeholder="Nama Lengkap" required>
+          </div>
 
-<form id="registerForm" class="d-none">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
+          </div>
 
-<div class="mb-3">
-<label class="form-label">Nama Lengkap</label>
-<input id="regName" class="form-control" placeholder="Nama Lengkap" required>
-</div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input id="regEmail" type="email" class="form-control" placeholder="email@domain.com" required>
+          </div>
 
-<div class="mb-3">
-<label class="form-label">Username</label>
-<input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
-</div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input id="regPassword" type="password" class="form-control" placeholder="••••••••" required>
+          </div>
 
-<div class="mb-3">
-<label class="form-label">Email</label>
-<input id="regEmail" type="email" class="form-control" placeholder="email@domain.com" required>
-</div>
+          <button type="submit" class="btn btn-warning text-dark w-100 fw-bold mt-2" id="btnRegSubmit">Buat Akun</button>
 
-<div class="mb-3">
-<label class="form-label">Password</label>
-<input id="regPassword" type="password" class="form-control" required>
-</div>
+          <div class="text-center mt-3">
+            <small>Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a></small>
+          </div>
+        </form>
+      </div>
 
-<button type="submit" class="btn btn-warning text-dark w-100 fw-bold" id="btnRegSubmit">Buat Akun</button>
-
-<div class="text-center mt-3">
-<small>
-Sudah punya akun?
-<a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a>
-</small>
-</div>
-
-</form>
-
-</div>
-</div>
-</div>
+    </div>
+  </div>
 </div>
 
 <!-- PLAYER MODAL -->
 <div class="modal fade" id="playerModal" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-xl modal-dialog-centered">
-<div class="modal-content overflow-hidden">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content overflow-hidden">
 
-<div class="modal-header bg-dark">
-<h6 class="modal-title" id="playerTitle"></h6>
-<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()" aria-label="Close"></button>
-</div>
+      <div class="modal-header bg-dark">
+        <h6 class="modal-title text-white" id="playerTitle">Streaming Player</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()" aria-label="Close"></button>
+      </div>
 
-<div class="modal-body p-0">
-<div class="row g-0">
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          <div class="col-lg-8">
+            <div class="ratio-16x9">
+              <iframe id="streamIframe" allowfullscreen allow="autoplay"></iframe>
+            </div>
+          </div>
 
-<div class="col-lg-8">
-<div class="ratio-16x9">
-<iframe id="streamIframe" allowfullscreen allow="autoplay"></iframe>
-</div>
-</div>
+          <div class="col-lg-4">
+            <div class="p-2 bg-dark border-bottom text-white">
+              <i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
+            </div>
+            <div class="chat-box p-3" id="chatContainer"></div>
+            <form class="p-2 bg-dark d-flex gap-2" onsubmit="sendMessage(event)">
+              <input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
+              <button type="submit" class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
 
-<div class="col-lg-4">
-<div class="p-2 bg-dark border-bottom">
-<i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
-</div>
-
-<div class="chat-box p-3" id="chatContainer"></div>
-
-<form class="p-2 bg-dark d-flex gap-2" onsubmit="sendMessage(event)">
-<input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
-<button type="submit" class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
-</form>
-</div>
-
-</div>
-</div>
-</div>
-</div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 /* =========================================
-   1. KONFIGURASI FIREBASE DATABASE
+   1. FIREBASE CONFIG
 ========================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAnqW79drGUG_0jfqJaXOqy0uxPzoZJz-M",
@@ -462,14 +395,13 @@ const firebaseConfig = {
   measurementId: "G-K6TG962WQ6"
 };
 
-// Inisialisasi Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
 /* =========================================
-   2. DATA DEFAULTS & GLOBAL STATE
+   2. GLOBAL STATE
 ========================================= */
 const DEFAULT_SUPERADMIN = {
     email: "admin@fans48.com",
@@ -513,8 +445,7 @@ let currentUser = JSON.parse(localStorage.getItem("fans48_session")) || null;
 let currentPage = "home";
 
 let settings = JSON.parse(localStorage.getItem("fans48_settings")) || {
-    theme: "dark",
-    fontColor: "#f1f1f1"
+    theme: "dark"
 };
 
 const members = [
@@ -525,7 +456,7 @@ const members = [
 let authModal, playerModal;
 
 /* =========================================
-   3. INISIALISASI & REALTIME LISTENERS
+   3. INITIALIZATION
 ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
     authModal = new bootstrap.Modal(document.getElementById("authModal"));
@@ -586,7 +517,7 @@ function saveUserToFirebase(userObj) {
 }
 
 /* =========================================
-   4. AUTHENTICATION (LOGIN & REGISTER)
+   4. AUTHENTICATION & MODAL CONTROLLER
 ========================================= */
 function openAuth() {
     toggleAuth("login");
@@ -667,7 +598,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         localStorage.setItem("fans48_session", JSON.stringify(currentUser));
         updateAuthUI();
         authModal.hide();
-        toast("Akun berhasil dibuat & tersimpan di cloud!", "success");
+        toast("Akun berhasil dibuat!", "success");
         renderPage("home");
     }).catch(err => {
         toast("Gagal mendaftar: " + err.message, "error");
@@ -683,7 +614,7 @@ function logout() {
 }
 
 /* =========================================
-   5. UI HELPER & NAVIGATION
+   5. RENDER UI & ROUTING
 ========================================= */
 function updateAuthUI() {
     const area = document.getElementById("userArea");
@@ -697,7 +628,7 @@ function updateAuthUI() {
 
     if (!currentUser) {
         area.innerHTML = `
-        <button class="btn btn-outline-light fw-bold" onclick="openAuth()">
+        <button class="btn btn-outline-danger fw-bold" onclick="openAuth()">
             <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar
         </button>`;
         return;
@@ -716,14 +647,6 @@ function updateAuthUI() {
         </button>
 
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-            <li><span class="dropdown-item-text">${escapeHTML(currentUser.username)}</span></li>
+            <li><span class="dropdown-item-text small text-muted">${escapeHTML(currentUser.username)}</span></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="javascript:void(0)" onclick="renderPage('settings')"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
-            ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" href="javascript:void(0)" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
-            <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
-        </ul>
-    </div>`;
-}
-
-function canAccessAdmin() {
-    return currentUser && (currentUser.role === "superadmin" || currentUs
+       
