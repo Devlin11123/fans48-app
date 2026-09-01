@@ -29,6 +29,7 @@ body {
     color:var(--text-color);
     font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
     transition:.3s;
+    min-height: 100vh;
 }
 
 body.light-mode {
@@ -73,6 +74,7 @@ body.light-mode .dropdown-item {
     background:rgba(11,12,16,.88);
     backdrop-filter:blur(12px);
     border-bottom:1px solid var(--card-border);
+    z-index: 1030;
 }
 
 .navbar-brand {
@@ -333,7 +335,7 @@ Fans<span>48</span>
 <div class="container my-4" id="main-content"></div>
 
 <!-- AUTH MODAL -->
-<div class="modal fade" id="authModal" tabindex="-1">
+<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered">
 <div class="modal-content p-3">
 
@@ -341,28 +343,28 @@ Fans<span>48</span>
 <h5 class="modal-title fw-bold" id="authTitle">
 <i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun
 </h5>
-<button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
 <div class="modal-body">
 
 <form id="loginForm">
 <div class="mb-3">
-<label>Username atau Email</label>
+<label class="form-label">Username atau Email</label>
 <input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
 </div>
 
 <div class="mb-3">
-<label>Password</label>
+<label class="form-label">Password</label>
 <input id="loginPassword" type="password" class="form-control" required>
 </div>
 
-<button class="btn btn-danger w-100 fw-bold" id="btnLoginSubmit">Masuk</button>
+<button type="submit" class="btn btn-danger w-100 fw-bold" id="btnLoginSubmit">Masuk</button>
 
 <div class="text-center mt-3">
 <small>
 Belum punya akun?
-<a href="#" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a>
+<a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a>
 </small>
 </div>
 </form>
@@ -370,31 +372,31 @@ Belum punya akun?
 <form id="registerForm" class="d-none">
 
 <div class="mb-3">
-<label>Nama Lengkap</label>
-<input id="regName" class="form-control" required>
+<label class="form-label">Nama Lengkap</label>
+<input id="regName" class="form-control" placeholder="Nama Lengkap" required>
 </div>
 
 <div class="mb-3">
-<label>Username</label>
+<label class="form-label">Username</label>
 <input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
 </div>
 
 <div class="mb-3">
-<label>Email</label>
-<input id="regEmail" type="email" class="form-control" required>
+<label class="form-label">Email</label>
+<input id="regEmail" type="email" class="form-control" placeholder="email@domain.com" required>
 </div>
 
 <div class="mb-3">
-<label>Password</label>
+<label class="form-label">Password</label>
 <input id="regPassword" type="password" class="form-control" required>
 </div>
 
-<button class="btn btn-warning text-dark w-100 fw-bold" id="btnRegSubmit">Buat Akun</button>
+<button type="submit" class="btn btn-warning text-dark w-100 fw-bold" id="btnRegSubmit">Buat Akun</button>
 
 <div class="text-center mt-3">
 <small>
 Sudah punya akun?
-<a href="#" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a>
+<a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a>
 </small>
 </div>
 
@@ -406,13 +408,13 @@ Sudah punya akun?
 </div>
 
 <!-- PLAYER MODAL -->
-<div class="modal fade" id="playerModal" tabindex="-1">
+<div class="modal fade" id="playerModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-xl modal-dialog-centered">
 <div class="modal-content overflow-hidden">
 
 <div class="modal-header bg-dark">
 <h6 class="modal-title" id="playerTitle"></h6>
-<button class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()"></button>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()" aria-label="Close"></button>
 </div>
 
 <div class="modal-body p-0">
@@ -433,7 +435,7 @@ Sudah punya akun?
 
 <form class="p-2 bg-dark d-flex gap-2" onsubmit="sendMessage(event)">
 <input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
-<button class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
+<button type="submit" class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
 </form>
 </div>
 
@@ -461,7 +463,9 @@ const firebaseConfig = {
 };
 
 // Inisialisasi Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 
 /* =========================================
@@ -528,22 +532,21 @@ document.addEventListener("DOMContentLoaded", () => {
     playerModal = new bootstrap.Modal(document.getElementById("playerModal"));
 
     applySettings();
+    updateAuthUI();
+    renderPage('home');
     syncOnlineDatabase();
 });
 
 function syncOnlineDatabase() {
-    // Sync Users dari Firebase
     db.ref('users').on('value', (snapshot) => {
         const data = snapshot.val();
         usersList = data ? Object.values(data) : [];
 
-        // Pastikan Super Admin Selalu Ada di Online Database
         const adminExists = usersList.some(u => u.username === "@superadmin");
         if (!adminExists) {
             db.ref('users/superadmin').set(DEFAULT_SUPERADMIN);
         }
 
-        // Update Sesi User Saat Ini secara Realtime
         if (currentUser) {
             const updatedMe = usersList.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
             if (updatedMe) {
@@ -556,19 +559,16 @@ function syncOnlineDatabase() {
         if (currentPage === "admin") renderPage("admin");
     });
 
-    // Sync Theater Shows
     db.ref('theater').on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
             theaterList = Object.values(data);
         } else {
-            // Inisialisasi awal theater jika kosong
             DEFAULT_THEATER_LIST.forEach(t => db.ref('theater/' + t.id).set(t));
         }
         if (currentPage === "theater" || currentPage === "home") renderPage(currentPage);
     });
 
-    // Sync Redeem Codes
     db.ref('redeemCodes').on('value', (snapshot) => {
         const data = snapshot.val();
         redeemCodes = data ? Object.values(data) : [];
@@ -718,502 +718,12 @@ function updateAuthUI() {
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
             <li><span class="dropdown-item-text">${escapeHTML(currentUser.username)}</span></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#" onclick="renderPage('settings')"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
-            ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" href="#" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
-            <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)" onclick="renderPage('settings')"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
+            ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" href="javascript:void(0)" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
+            <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
         </ul>
     </div>`;
 }
 
 function canAccessAdmin() {
-    return currentUser && (currentUser.role === "superadmin" || currentUser.role === "admin");
-}
-
-function renderPage(page) {
-    currentPage = page;
-    document.querySelectorAll(".nav-link").forEach(x => x.classList.remove("active"));
-    const activeNav = document.getElementById("nav-" + (page === "memberLive" ? "member-live" : page));
-    if (activeNav) activeNav.classList.add("active");
-
-    const container = document.getElementById("main-content");
-    container.classList.add("page-hidden");
-
-    setTimeout(() => {
-        if (page === "home") container.innerHTML = getHomeHTML();
-        else if (page === "theater") container.innerHTML = getTheaterHTML();
-        else if (page === "memberLive") container.innerHTML = getMemberLiveHTML();
-        else if (page === "member") container.innerHTML = getMemberHTML();
-        else if (page === "topup") container.innerHTML = getTopupHTML();
-        else if (page === "admin") {
-            if (!canAccessAdmin()) {
-                toast("Akses ditolak!", "error");
-                renderPage("home");
-                return;
-            }
-            container.innerHTML = getAdminHTML();
-        } else if (page === "settings") container.innerHTML = getSettingsHTML();
-
-        container.classList.remove("page-hidden");
-    }, 200);
-}
-
-/* =========================================
-   6. PAGES TEMPLATES
-========================================= */
-function getHomeHTML() {
-    return `
-    <div class="hero-banner mb-5 text-center text-lg-start">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-3">Selamat Datang di <span class="text-danger">Fans48</span> Hub</h1>
-                <p class="lead text-muted mb-4">Platform terlengkap bagi para pengagum idol 48 Group. Nikmati streaming theater interaktif, live member, hingga tukar promo redeem code dengan mudah!</p>
-                <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
-                    <button class="btn btn-danger btn-lg fw-bold px-4" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
-                    <button class="btn btn-outline-warning btn-lg fw-bold px-4" onclick="renderPage('topup')"><i class="fa-solid fa-gift me-2"></i>Kode Redeem</button>
-                </div>
-            </div>
-            <div class="col-lg-4 d-none d-lg-block text-center fs-1 text-danger">
-                <i class="fa-solid fa-heart-pulse fa-5x opacity-75"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-title">
-        <h3 class="fw-bold"><i class="fa-solid fa-star text-warning me-2"></i>Fitur Unggulan Fans48</h3>
-        <small class="text-muted">Jelajahi semua kemudahan yang kami sediakan untuk kenyamanan streaming Anda.</small>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-4">
-            <div class="card p-4 feature-card">
-                <div class="text-danger fs-1 mb-3"><i class="fa-solid fa-building-columns"></i></div>
-                <h5 class="fw-bold">Live & Replay Theater</h5>
-                <p class="text-muted small">Tonton pertunjukan setlist theater favorit secara langsung maupun tayangan ulang.</p>
-                <button class="btn btn-sm btn-outline-danger mt-auto align-self-start fw-bold" onclick="renderPage('theater')">Lihat Show <i class="fa-solid fa-arrow-right ms-1"></i></button>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="card p-4 feature-card">
-                <div class="text-danger fs-1 mb-3"><i class="fa-solid fa-tower-broadcast"></i></div>
-                <h5 class="fw-bold">Live Streaming Member</h5>
-                <p class="text-muted small">Dapatkan akses langsung ke siaran individu para member favorit secara real-time!</p>
-                <button class="btn btn-sm btn-outline-danger mt-auto align-self-start fw-bold" onclick="renderPage('memberLive')">Tonton Live <i class="fa-solid fa-arrow-right ms-1"></i></button>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-            <div class="card p-4 feature-card">
-                <div class="text-warning fs-1 mb-3"><i class="fa-solid fa-coins"></i></div>
-                <h5 class="fw-bold">Top Up & Kode Redeem</h5>
-                <p class="text-muted small">Isi ulang saldo Cash dengan fleksibel atau tukarkan kode redeem / voucher gratis.</p>
-                <button class="btn btn-sm btn-outline-warning mt-auto align-self-start fw-bold" onclick="renderPage('topup')">Top Up Sekarang <i class="fa-solid fa-arrow-right ms-1"></i></button>
-            </div>
-        </div>
-    </div>`;
-}
-
-function getTheaterHTML() {
-    return `
-    <div class="section-title">
-        <h3 class="fw-bold"><i class="fa-solid fa-building-columns text-danger me-2"></i>Live & Replay Theater</h3>
-        <small class="text-muted">Bayar 1 Cash untuk membuka satu show.</small>
-    </div>
-    <div class="row g-4">
-        ${theaterList.map(renderTheaterCard).join("")}
-    </div>`;
-}
-
-function renderTheaterCard(t) {
-    const unlocked = currentUser && currentUser.unlockedShows && currentUser.unlockedShows.includes(t.id);
-    return `
-    <div class="col-md-6">
-        <div class="card p-3 h-100">
-            <div class="d-flex justify-content-between mb-3">
-                <span class="badge ${t.category === "live" ? "badge-live" : t.category === "upcoming" ? "bg-warning text-dark" : "bg-info text-dark"}">
-                    ${t.category === "live" ? "LIVE NOW" : t.category === "upcoming" ? "UPCOMING" : "REPLAY"}
-                </span>
-                <span class="text-muted small">${t.date} • ${t.time}</span>
-            </div>
-            <h4 class="fw-bold">${escapeHTML(t.setlist)}</h4>
-            <p class="text-danger fw-bold">${escapeHTML(t.team)}</p>
-            <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-                <span class="text-muted"><i class="fa-solid fa-eye"></i> ${t.viewers}</span>
-                ${t.category === "upcoming"
-                    ? `<button class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-clock me-1"></i> Belum Mulai</button>`
-                    : unlocked
-                    ? `<button class="btn btn-success btn-sm fw-bold" onclick="openPlayer('${t.id}','theater')"><i class="fa-solid fa-play me-1"></i> Putar Show</button>`
-                    : `<button class="btn btn-danger btn-sm fw-bold" onclick="buyShow('${t.id}')"><i class="fa-solid fa-ticket me-1"></i> Tonton 1 Cash</button>`
-                }
-            </div>
-        </div>
-    </div>`;
-}
-
-function buyShow(id) {
-    if (!currentUser) {
-        toast("Silakan login terlebih dahulu!", "error");
-        openAuth();
-        return;
-    }
-
-    if ((currentUser.cash || 0) < 1) {
-        toast("Cash tidak cukup!", "error");
-        renderPage("topup");
-        return;
-    }
-
-    if (!currentUser.unlockedShows) currentUser.unlockedShows = [];
-    currentUser.cash--;
-    currentUser.unlockedShows.push(id);
-
-    saveUserToFirebase(currentUser).then(() => {
-        toast("Show berhasil dibuka!", "success");
-        openPlayer(id, "theater");
-    });
-}
-
-function getAdminHTML() {
-    return `
-    <div class="section-title">
-        <h3 class="fw-bold"><i class="fa-solid fa-user-shield text-danger me-2"></i>Admin Control Panel</h3>
-        <small class="text-muted">Kelola status show theater, inject Cash, kode redeem, dan role pengguna secara online.</small>
-    </div>
-
-    <!-- MANAJEMEN KODE REDEEM -->
-    <div class="card p-4 border-success mb-4">
-        <h5 class="text-success fw-bold mb-3"><i class="fa-solid fa-gift me-2"></i>Buat & Kelola Kode Redeem</h5>
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <input id="newRedeemCode" class="form-control" placeholder="KODE REDEEM" style="text-transform:uppercase">
-            </div>
-            <div class="col-md-3">
-                <input id="newRedeemCash" type="number" min="1" class="form-control" placeholder="Bonus Cash">
-            </div>
-            <div class="col-md-3">
-                <input id="newRedeemQuota" type="number" min="1" class="form-control" placeholder="Kuota">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-success fw-bold w-100" onclick="createRedeemCode()"><i class="fa-solid fa-plus me-1"></i>Buat</button>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-dark align-middle">
-                <thead>
-                    <tr><th>Kode</th><th>Bonus Cash</th><th>Penggunaan / Kuota</th><th>Aksi</th></tr>
-                </thead>
-                <tbody>
-                    ${redeemCodes.length === 0 ? `<tr><td colspan="4" class="text-center text-muted">Belum ada kode redeem.</td></tr>` : ""}
-                    ${redeemCodes.map(r => `
-                        <tr>
-                            <td class="fw-bold text-warning">${escapeHTML(r.code)}</td>
-                            <td>+${r.cash} Cash</td>
-                            <td>${r.usedCount || 0} / ${r.quota}</td>
-                            <td><button class="btn btn-sm btn-outline-danger" onclick="deleteRedeemCode('${r.code}')"><i class="fa-solid fa-trash"></i></button></td>
-                        </tr>
-                    `).join("")}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- INJECT CASH & ROLE -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="card p-4 border-warning h-100">
-                <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-coins me-2"></i>Inject Cash User</h5>
-                <form onsubmit="injectCash(event)">
-                    <div class="mb-3"><input id="injectUsername" class="form-control" placeholder="@username" required></div>
-                    <div class="mb-3"><input id="injectAmount" type="number" min="1" class="form-control" placeholder="Jumlah Cash" required></div>
-                    <button class="btn btn-warning text-dark fw-bold w-100">Inject Cash</button>
-                </form>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card p-4 border-danger h-100">
-                <h5 class="text-danger fw-bold mb-3"><i class="fa-solid fa-user-gear me-2"></i>Ubah Role User</h5>
-                <form onsubmit="changeRole(event)">
-                    <div class="mb-3"><input id="roleUsername" class="form-control" placeholder="@username" required></div>
-                    <div class="mb-3">
-                        <select id="newRole" class="form-select">
-                            <option value="pelanggan">Pelanggan</option>
-                            <option value="moderator">Moderator</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-danger fw-bold w-100">Ubah Role</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- DAFTAR USER ONLINE -->
-    <div class="card p-4">
-        <h5 class="fw-bold mb-3"><i class="fa-solid fa-users me-2"></i>Daftar Pengguna Terdaftar (Online Database)</h5>
-        <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle">
-                <thead><tr><th>Nama</th><th>Username</th><th>Email</th><th>Cash</th><th>Role</th></tr></thead>
-                <tbody>
-                    ${usersList.map(u => `
-                        <tr>
-                            <td>${escapeHTML(u.name)}</td>
-                            <td class="text-warning">${escapeHTML(u.username)}</td>
-                            <td>${escapeHTML(u.email)}</td>
-                            <td class="fw-bold">${(u.cash || 0).toLocaleString()}</td>
-                            <td><span class="badge ${u.role === 'superadmin' ? 'bg-danger' : u.role === 'admin' ? 'bg-warning text-dark' : 'bg-secondary'}">${(u.role || 'pelanggan').toUpperCase()}</span></td>
-                        </tr>
-                    `).join("")}
-                </tbody>
-            </table>
-        </div>
-    </div>`;
-}
-
-/* =========================================
-   7. ADMIN ACTIONS & TOPUP REDEEM
-========================================= */
-function createRedeemCode() {
-    const code = document.getElementById("newRedeemCode").value.trim().toUpperCase();
-    const cash = parseInt(document.getElementById("newRedeemCash").value);
-    const quota = parseInt(document.getElementById("newRedeemQuota").value);
-
-    if (!code || !cash || !quota) {
-        toast("Isi semua kolom kode redeem!", "error");
-        return;
-    }
-
-    const obj = { code, cash, quota, usedCount: 0, usedBy: [] };
-    db.ref('redeemCodes/' + code).set(obj).then(() => {
-        toast("Kode redeem berhasil disimpan di server!", "success");
-    });
-}
-
-function deleteRedeemCode(code) {
-    db.ref('redeemCodes/' + code).remove().then(() => {
-        toast("Kode redeem dihapus!", "success");
-    });
-}
-
-function injectCash(e) {
-    e.preventDefault();
-    let username = document.getElementById("injectUsername").value.trim().toLowerCase();
-    if (!username.startsWith("@")) username = "@" + username;
-    const amount = parseInt(document.getElementById("injectAmount").value);
-
-    const target = usersList.find(u => u.username.toLowerCase() === username);
-    if (!target) {
-        toast("Username tidak ditemukan!", "error");
-        return;
-    }
-
-    target.cash = (target.cash || 0) + amount;
-    saveUserToFirebase(target).then(() => {
-        toast(`Berhasil menambah +${amount} Cash ke ${target.username}`, "success");
-    });
-}
-
-function changeRole(e) {
-    e.preventDefault();
-    let username = document.getElementById("roleUsername").value.trim().toLowerCase();
-    if (!username.startsWith("@")) username = "@" + username;
-    const role = document.getElementById("newRole").value;
-
-    const target = usersList.find(u => u.username.toLowerCase() === username);
-    if (!target) {
-        toast("Username tidak ditemukan!", "error");
-        return;
-    }
-
-    if (target.role === "superadmin") {
-        toast("Role Super Admin tidak dapat diubah!", "error");
-        return;
-    }
-
-    target.role = role;
-    saveUserToFirebase(target).then(() => {
-        toast(`Role ${target.username} berhasil diubah menjadi ${role}`, "success");
-    });
-}
-
-function getTopupHTML() {
-    return `
-    <div class="section-title">
-        <h3 class="fw-bold"><i class="fa-solid fa-coins text-warning me-2"></i>Top Up Cash</h3>
-        <small class="text-muted">1 Cash = Rp1.000</small>
-    </div>
-
-    <div class="card p-4 mb-4 border-warning">
-        <h5 class="fw-bold text-warning mb-2"><i class="fa-solid fa-gift me-2"></i>Punya Kode Redeem?</h5>
-        <form onsubmit="redeemCode(event)" class="d-flex gap-2">
-            <input id="userRedeemInput" class="form-control text-uppercase" placeholder="Masukkan Kode Redeem" required>
-            <button class="btn btn-warning fw-bold px-4 text-dark">Tukarkan</button>
-        </form>
-    </div>
-
-    <div class="row g-4">
-        ${[10, 50, 100].map((cash, i) => `
-            <div class="col-md-4">
-                <div class="topup-card ${i === 1 ? 'popular' : ''}" onclick="topup(${cash})">
-                    ${i === 1 ? '<span class="badge-popular">TERLARIS</span>' : ''}
-                    <i class="fa-solid fa-coins text-warning fs-2"></i>
-                    <h4 class="fw-bold">${cash} Cash</h4>
-                    <span class="text-muted">Rp${(cash * 1000).toLocaleString()}</span>
-                </div>
-            </div>
-        `).join("")}
-    </div>`;
-}
-
-function redeemCode(e) {
-    e.preventDefault();
-    if (!currentUser) {
-        toast("Silakan login terlebih dahulu!", "error");
-        openAuth();
-        return;
-    }
-
-    const inputCode = document.getElementById("userRedeemInput").value.trim().toUpperCase();
-    const redeemObj = redeemCodes.find(r => r.code === inputCode);
-
-    if (!redeemObj) {
-        toast("Kode redeem tidak valid!", "error");
-        return;
-    }
-
-    if ((redeemObj.usedCount || 0) >= redeemObj.quota) {
-        toast("Kuota kode redeem telah habis!", "error");
-        return;
-    }
-
-    if (!redeemObj.usedBy) redeemObj.usedBy = [];
-    if (redeemObj.usedBy.includes(currentUser.username)) {
-        toast("Anda sudah pernah klaim kode ini!", "error");
-        return;
-    }
-
-    currentUser.cash = (currentUser.cash || 0) + redeemObj.cash;
-    redeemObj.usedCount = (redeemObj.usedCount || 0) + 1;
-    redeemObj.usedBy.push(currentUser.username);
-
-    saveUserToFirebase(currentUser);
-    db.ref('redeemCodes/' + redeemObj.code).set(redeemObj);
-    toast(`Selamat! Berhasil tukar +${redeemObj.cash} Cash!`, "success");
-}
-
-function topup(amount) {
-    if (!currentUser) {
-        toast("Silakan login dulu!", "error");
-        openAuth();
-        return;
-    }
-
-    currentUser.cash = (currentUser.cash || 0) + amount;
-    saveUserToFirebase(currentUser).then(() => {
-        toast(`Top Up berhasil! +${amount} Cash`, "success");
-    });
-}
-
-/* =========================================
-   8. MISC (MEMBER, SETTINGS, PLAYER, CHAT)
-========================================= */
-function getMemberHTML() {
-    return `
-    <div class="section-title"><h3 class="fw-bold"><i class="fa-solid fa-users text-danger me-2"></i>Member</h3></div>
-    <div class="row row-cols-2 row-cols-md-4 g-4">
-        ${members.map(m => `
-            <div class="col">
-                <div class="card overflow-hidden h-100">
-                    <img src="${m.img}" class="w-100 member-img">
-                    <div class="p-3">
-                        <span class="badge bg-danger">Member</span>
-                        <h5 class="fw-bold mt-2">${m.stageName}</h5>
-                        <small class="text-muted">${m.fullName}</small>
-                    </div>
-                </div>
-            </div>
-        `).join("")}
-    </div>`;
-}
-
-function getMemberLiveHTML() {
-    return `
-    <div class="section-title"><h3 class="fw-bold"><i class="fa-solid fa-tower-broadcast text-danger me-2"></i>Live Member</h3></div>
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card p-4">
-                <h5 class="fw-bold">Freya Jayawardana</h5>
-                <p class="text-muted">Live Streaming Member</p>
-                <button class="btn btn-danger" onclick="openPlayer('member1','member')"><i class="fa-solid fa-video me-1"></i> Tonton Live</button>
-            </div>
-        </div>
-    </div>`;
-}
-
-function getSettingsHTML() {
-    return `
-    <div class="section-title"><h3 class="fw-bold"><i class="fa-solid fa-gear text-warning me-2"></i>Settings</h3></div>
-    <div class="card p-4">
-        <h5 class="fw-bold">Tema Tampilan</h5>
-        <div class="d-flex gap-3 mt-3">
-            <button class="btn btn-dark" onclick="setTheme('dark')"><i class="fa-solid fa-moon me-2"></i>Dark</button>
-            <button class="btn btn-light border" onclick="setTheme('light')"><i class="fa-solid fa-sun me-2"></i>Light</button>
-        </div>
-    </div>`;
-}
-
-function setTheme(theme) {
-    settings.theme = theme;
-    localStorage.setItem("fans48_settings", JSON.stringify(settings));
-    applySettings();
-    toast(theme === "dark" ? "Tema gelap aktif." : "Tema terang aktif.", "success");
-}
-
-function applySettings() {
-    document.body.classList.toggle("light-mode", settings.theme === "light");
-}
-
-function openPlayer(id, type) {
-    let item = theaterList.find(t => t.id === id) || { setlist: "Member Live", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" };
-    document.getElementById("playerTitle").innerText = item.setlist;
-    document.getElementById("streamIframe").src = item.embedUrl;
-    playerModal.show();
-}
-
-function closePlayer() {
-    document.getElementById("streamIframe").src = "";
-}
-
-function sendMessage(e) {
-    e.preventDefault();
-    if (!currentUser) return toast("Login untuk kirim pesan!", "error");
-    const input = document.getElementById("chatInput");
-    if (!input.value.trim()) return;
-
-    const div = document.createElement("div");
-    div.className = "small mb-2";
-    div.innerHTML = `<span class="text-warning fw-bold">${escapeHTML(currentUser.name)}:</span> <span>${escapeHTML(input.value)}</span>`;
-    document.getElementById("chatContainer").appendChild(div);
-    input.value = "";
-}
-
-function toast(msg, type) {
-    const el = document.createElement("div");
-    el.className = "position-fixed bottom-0 end-0 p-3";
-    el.style.zIndex = "99999";
-    el.innerHTML = `<div class="alert ${type === "success" ? "alert-success" : "alert-danger"} shadow">${escapeHTML(msg)}</div>`;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
-}
-
-function escapeHTML(str) {
-    return String(str || '').replace(/[&<>'"]/g, tag => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "'": "&#39;",
-        '"': "&quot;"
-    }[tag]));
-}
-</script>
-
-</body>
-</html>
+    return currentUser && (currentUser.role === "superadmin" || currentUs
