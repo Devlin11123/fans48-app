@@ -9,7 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- FIREBASE SDK COMPAT (SIAP PAKAI DI HTML) -->
+<!-- FIREBASE SDK COMPAT (ONLINE DATABASE) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -30,7 +30,6 @@ body {
     min-height: 100vh;
 }
 
-/* FIX MODAL & Z-INDEX */
 .modal-backdrop { z-index: 1040 !important; }
 .modal { z-index: 1050 !important; }
 
@@ -46,7 +45,6 @@ body {
     border-color: var(--card-border) !important;
 }
 
-/* NAVBAR */
 .navbar {
     background-color: #10121a !important;
     border-bottom: 1px solid var(--card-border);
@@ -78,7 +76,6 @@ body {
     background: var(--primary-color);
 }
 
-/* CARDS & UI */
 .card {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
@@ -163,10 +160,10 @@ body {
 </div>
 </nav>
 
-<!-- CONTAINER UTAMA -->
+<!-- MAIN CONTENT -->
 <div class="container my-4" id="main-content"></div>
 
-<!-- AUTH MODAL (LOGIN & REGISTER) -->
+<!-- AUTH MODAL -->
 <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
@@ -179,10 +176,10 @@ body {
       </div>
 
       <div class="modal-body">
-        <!-- FORM LOGIN -->
+        <!-- LOGIN FORM -->
         <form id="loginForm">
           <div class="mb-3">
-            <label class="form-label">Username atau Email</label>
+            <label class="form-label">Username / Email</label>
             <input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
           </div>
 
@@ -198,7 +195,7 @@ body {
           </div>
         </form>
 
-        <!-- FORM REGISTER -->
+        <!-- REGISTER FORM -->
         <form id="registerForm" class="d-none">
           <div class="mb-3">
             <label class="form-label">Nama Lengkap</label>
@@ -271,7 +268,7 @@ body {
 
 <script>
 /* =========================================
-   1. KONFIGURASI FIREBASE PROJECT KAMU
+   FIREBASE CONFIGURATION
 ========================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCEZev9CKBLXgNcDSlpD4wjDMomzLIlCYc",
@@ -290,7 +287,7 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 
 /* =========================================
-   2. DATA MOCKUP INITIAL
+   APP STATE & MOCK DATA
 ========================================= */
 const DEFAULT_SUPERADMIN = {
     email: "admin@fans48.com",
@@ -316,7 +313,7 @@ const DEFAULT_THEATER_LIST = [
     },
     {
         id: "th-2",
-        setlist: "Itadaki Love",
+        setlist: "Aturan Anti Cinta",
         team: "JKT48 New Era",
         date: "Besok",
         time: "19:00 WIB",
@@ -333,7 +330,7 @@ let currentUser = JSON.parse(localStorage.getItem("fans48_session")) || null;
 let currentPage = "home";
 
 /* =========================================
-   3. INISIALISASI DAN SYNC FIREBASE
+   DATABASE REALTIME SYNC
 ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
     updateAuthUI();
@@ -384,7 +381,7 @@ function saveUserToFirebase(userObj) {
 }
 
 /* =========================================
-   4. MODAL & AUTHENTICATION
+   AUTH FUNCTIONS
 ========================================= */
 function openAuthModal() {
     toggleAuth('login');
@@ -474,7 +471,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         localStorage.setItem("fans48_session", JSON.stringify(currentUser));
         updateAuthUI();
         closeAuthModal();
-        toast("Akun berhasil dibuat & tersimpan di cloud!", "success");
+        toast("Akun tersimpan di cloud!", "success");
         renderPage("home");
     }).catch(err => {
         toast("Gagal mendaftar: " + err.message, "error");
@@ -490,7 +487,7 @@ function logout() {
 }
 
 /* =========================================
-   5. ROUTING & UI RENDER
+   UI RENDERING
 ========================================= */
 function updateAuthUI() {
     const area = document.getElementById("userArea");
@@ -561,7 +558,7 @@ function getHomeHTML() {
     <div class="p-5 mb-4 rounded-3 text-center text-lg-start" style="background: linear-gradient(135deg, rgba(230,0,18,0.2), #151821); border: 1px solid var(--card-border);">
         <div class="container-fluid py-3">
             <h1 class="display-5 fw-bold text-white mb-3">Selamat Datang di <span class="text-danger">Fans48</span></h1>
-            <p class="col-md-8 fs-5 text-muted">Platform terpadu untuk menonton tayangan langsung setlist theater idol favorit Anda.</p>
+            <p class="col-md-8 fs-5 text-muted">Platform terpadu streaming theater idol favorit Anda.</p>
             <div class="d-flex gap-2">
                 <button class="btn btn-danger btn-lg fw-bold px-4" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
             </div>
@@ -631,7 +628,7 @@ function getTopupHTML() {
     </div>
     <div class="card p-4 mb-4 border-warning">
         <h5 class="fw-bold text-warning mb-2"><i class="fa-solid fa-coins me-2"></i>Cash Hub</h5>
-        <p class="text-muted">Fitur pembayaran otomatis akan segera diintegrasikan.</p>
+        <p class="text-muted">Pilih paket Top Up Cash yang diinginkan.</p>
     </div>`;
 }
 
