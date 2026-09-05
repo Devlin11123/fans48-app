@@ -9,7 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- FIREBASE SDK COMPAT (ONLINE DATABASE) -->
+<!-- FIREBASE SDK COMPAT -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -30,15 +30,11 @@ body {
     min-height: 100vh;
 }
 
-.modal-backdrop { z-index: 1040 !important; }
-.modal { z-index: 1050 !important; }
-
 .modal-content {
     background-color: #151821 !important;
     color: #ffffff !important;
     border: 1px solid var(--card-border) !important;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 
 .modal-header, .modal-footer {
@@ -48,14 +44,9 @@ body {
 .navbar {
     background-color: #10121a !important;
     border-bottom: 1px solid var(--card-border);
-    z-index: 1030;
 }
 
-.navbar-brand {
-    font-weight: 800;
-    color: #ffffff !important;
-}
-
+.navbar-brand { font-weight: 800; color: #ffffff !important; }
 .navbar-brand span { color: var(--primary-color); }
 
 .nav-link {
@@ -66,12 +57,7 @@ body {
     cursor: pointer;
 }
 
-.nav-link:hover {
-    color: #ffffff !important;
-    background: rgba(255,255,255,0.05);
-}
-
-.nav-link.active {
+.nav-link:hover, .nav-link.active {
     color: #ffffff !important;
     background: var(--primary-color);
 }
@@ -91,7 +77,6 @@ body {
 
 .form-control:focus {
     border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 0.25rem rgba(230,0,18,0.25) !important;
 }
 
 .cash-badge {
@@ -117,7 +102,7 @@ body {
 }
 
 .chat-box {
-    height: 320px;
+    height: 300px;
     overflow-y: auto;
     background-color: #0b0c10;
 }
@@ -129,102 +114,87 @@ body {
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
 <div class="container">
+    <a class="navbar-brand fs-4" href="javascript:void(0)" onclick="renderPage('home')">
+        <i class="fa-solid fa-bolt text-danger me-2"></i>Fans<span>48</span>
+    </a>
 
-<a class="navbar-brand fs-4" href="javascript:void(0)" onclick="renderPage('home')">
-    <i class="fa-solid fa-bolt text-danger me-2"></i>Fans<span>48</span>
-</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
-    <span class="navbar-toggler-icon"></span>
-</button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" id="nav-home" onclick="renderPage('home')"><i class="fa-solid fa-house me-1"></i> Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-theater" onclick="renderPage('theater')"><i class="fa-solid fa-building-columns me-1"></i> Live Theater</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-topup" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash</a>
+            </li>
+            <li class="nav-item d-none" id="nav-admin-item">
+                <a class="nav-link text-danger fw-bold" id="nav-admin" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-1"></i> Admin Panel</a>
+            </li>
+        </ul>
 
-<div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
-        <li class="nav-item">
-            <a class="nav-link active" id="nav-home" onclick="renderPage('home')"><i class="fa-solid fa-house me-1"></i> Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="nav-theater" onclick="renderPage('theater')"><i class="fa-solid fa-building-columns me-1"></i> Live Theater</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="nav-topup" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash</a>
-        </li>
-        <li class="nav-item d-none" id="nav-admin-item">
-            <a class="nav-link text-danger fw-bold" id="nav-admin" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-1"></i> Admin Panel</a>
-        </li>
-    </ul>
-
-    <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
-</div>
-
+        <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
+    </div>
 </div>
 </nav>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN CONTAINER -->
 <div class="container my-4" id="main-content"></div>
 
 <!-- AUTH MODAL -->
-<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
-
       <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="authTitle">
-            <i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun
-        </h5>
-        <button type="button" class="btn-close btn-close-white" onclick="closeAuthModal()"></button>
+        <h5 class="modal-title fw-bold" id="authTitle"><i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-
       <div class="modal-body">
-        <!-- LOGIN FORM -->
+        <!-- LOGIN -->
         <form id="loginForm">
           <div class="mb-3">
             <label class="form-label">Username / Email</label>
             <input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
           </div>
-
           <div class="mb-3">
             <label class="form-label">Password</label>
             <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" required>
           </div>
-
           <button type="submit" class="btn btn-danger w-100 fw-bold mt-2">Masuk</button>
-
           <div class="text-center mt-3">
             <small>Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a></small>
           </div>
         </form>
 
-        <!-- REGISTER FORM -->
+        <!-- REGISTER -->
         <form id="registerForm" class="d-none">
           <div class="mb-3">
             <label class="form-label">Nama Lengkap</label>
             <input id="regName" class="form-control" placeholder="Nama Lengkap" required>
           </div>
-
           <div class="mb-3">
             <label class="form-label">Username</label>
             <input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
           </div>
-
           <div class="mb-3">
             <label class="form-label">Email</label>
             <input id="regEmail" type="email" class="form-control" placeholder="email@domain.com" required>
           </div>
-
           <div class="mb-3">
             <label class="form-label">Password</label>
             <input id="regPassword" type="password" class="form-control" placeholder="••••••••" required>
           </div>
-
           <button type="submit" class="btn btn-warning text-dark w-100 fw-bold mt-2">Buat Akun</button>
-
           <div class="text-center mt-3">
             <small>Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a></small>
           </div>
         </form>
       </div>
-
     </div>
   </div>
 </div>
@@ -233,12 +203,10 @@ body {
 <div class="modal fade" id="playerModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content overflow-hidden">
-
       <div class="modal-header bg-dark">
         <h6 class="modal-title text-white" id="playerTitle">Streaming Player</h6>
-        <button type="button" class="btn-close btn-close-white" onclick="closePlayer()"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()"></button>
       </div>
-
       <div class="modal-body p-0">
         <div class="row g-0">
           <div class="col-lg-8">
@@ -246,7 +214,6 @@ body {
               <iframe id="streamIframe" allowfullscreen allow="autoplay"></iframe>
             </div>
           </div>
-
           <div class="col-lg-4 d-flex flex-column" style="background:#151821;">
             <div class="p-2 bg-dark border-bottom text-white">
               <i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
@@ -259,7 +226,6 @@ body {
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -267,9 +233,7 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-/* =========================================
-   FIREBASE CONFIGURATION
-========================================= */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCEZev9CKBLXgNcDSlpD4wjDMomzLIlCYc",
   authDomain: "fans-48-project.firebaseapp.com",
@@ -281,200 +245,103 @@ const firebaseConfig = {
   measurementId: "G-519WHGEDS9"
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* =========================================
-   APP STATE & MOCK DATA
-========================================= */
-const DEFAULT_SUPERADMIN = {
-    email: "admin@fans48.com",
-    username: "@superadmin",
-    name: "Super Admin",
-    password: "admin123",
-    role: "superadmin",
-    cash: 999999,
-    unlockedShows: []
-};
-
+/* INITIAL STATE */
 const DEFAULT_THEATER_LIST = [
-    {
-        id: "th-1",
-        setlist: "Cara Meminum Ramune",
-        team: "JKT48 New Era",
-        date: "Hari Ini",
-        time: "19:00 WIB",
-        category: "live",
-        viewers: "14.2k",
-        price: 1,
-        embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1"
-    },
-    {
-        id: "th-2",
-        setlist: "Aturan Anti Cinta",
-        team: "JKT48 New Era",
-        date: "Besok",
-        time: "19:00 WIB",
-        category: "upcoming",
-        viewers: "-",
-        price: 1,
-        embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1"
-    }
+    { id: "th-1", setlist: "Cara Meminum Ramune", team: "JKT48 New Era", date: "Hari Ini", time: "19:00 WIB", category: "live", viewers: "14.2k", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" },
+    { id: "th-2", setlist: "Aturan Anti Cinta", team: "JKT48 New Era", date: "Besok", time: "19:00 WIB", category: "upcoming", viewers: "-", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" }
 ];
 
 let usersList = [];
-let theaterList = [];
+let theaterList = DEFAULT_THEATER_LIST;
 let currentUser = JSON.parse(localStorage.getItem("fans48_session")) || null;
 let currentPage = "home";
 
-/* =========================================
-   DATABASE REALTIME SYNC
-========================================= */
 document.addEventListener("DOMContentLoaded", () => {
     updateAuthUI();
     renderPage('home');
-    syncOnlineDatabase();
+    syncFirebase();
 });
 
-function syncOnlineDatabase() {
+function syncFirebase() {
     db.ref('users').on('value', (snapshot) => {
         const data = snapshot.val();
         usersList = data ? Object.values(data) : [];
-
-        const adminExists = usersList.some(u => u.username === "@superadmin");
-        if (!adminExists) {
-            db.ref('users/superadmin').set(DEFAULT_SUPERADMIN);
-        }
-
         if (currentUser) {
-            const updatedMe = usersList.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-            if (updatedMe) {
-                currentUser = updatedMe;
+            const myData = usersList.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+            if (myData) {
+                currentUser = myData;
                 localStorage.setItem("fans48_session", JSON.stringify(currentUser));
             }
         }
-
         updateAuthUI();
         if (currentPage === "admin") renderPage("admin");
     });
 
     db.ref('theater').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-            theaterList = Object.values(data);
-        } else {
-            DEFAULT_THEATER_LIST.forEach(t => db.ref('theater/' + t.id).set(t));
-        }
+        if (data) theaterList = Object.values(data);
         if (currentPage === "theater" || currentPage === "home") renderPage(currentPage);
     });
 }
 
-function makeSafeKey(key) {
-    return key.replace(/[^a-zA-Z0-9]/g, "_");
-}
-
-function saveUserToFirebase(userObj) {
-    const key = makeSafeKey(userObj.username);
-    return db.ref('users/' + key).set(userObj);
-}
-
-/* =========================================
-   AUTH FUNCTIONS
-========================================= */
 function openAuthModal() {
     toggleAuth('login');
-    const modalEl = document.getElementById('authModal');
-    let modal = bootstrap.Modal.getInstance(modalEl);
-    if (!modal) modal = new bootstrap.Modal(modalEl);
-    modal.show();
-}
-
-function closeAuthModal() {
-    const modalEl = document.getElementById('authModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) modal.hide();
+    new bootstrap.Modal(document.getElementById('authModal')).show();
 }
 
 function toggleAuth(type) {
-    const login = document.getElementById("loginForm");
-    const register = document.getElementById("registerForm");
-    const title = document.getElementById("authTitle");
-
     if (type === "register") {
-        login.classList.add("d-none");
-        register.classList.remove("d-none");
-        title.innerHTML = '<i class="fa-solid fa-user-plus text-warning me-2"></i>Daftar Akun';
+        document.getElementById("loginForm").classList.add("d-none");
+        document.getElementById("registerForm").classList.remove("d-none");
+        document.getElementById("authTitle").innerHTML = '<i class="fa-solid fa-user-plus text-warning me-2"></i>Daftar Akun';
     } else {
-        register.classList.add("d-none");
-        login.classList.remove("d-none");
-        title.innerHTML = '<i class="fa-solid fa-right-to-bracket text-danger me-2"></i>Login Akun';
+        document.getElementById("registerForm").classList.add("d-none");
+        document.getElementById("loginForm").classList.remove("d-none");
+        document.getElementById("authTitle").innerHTML = '<i class="fa-solid fa-right-to-bracket text-danger me-2"></i>Login Akun';
     }
 }
 
-document.getElementById("loginForm").addEventListener("submit", function(e) {
+document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const identifier = document.getElementById("loginIdentifier").value.trim().toLowerCase();
-    const password = document.getElementById("loginPassword").value;
+    const id = document.getElementById("loginIdentifier").value.trim().toLowerCase();
+    const pass = document.getElementById("loginPassword").value;
 
-    const user = usersList.find(u =>
-        (u.email.toLowerCase() === identifier ||
-         u.username.toLowerCase() === identifier ||
-         u.username.toLowerCase() === "@" + identifier.replace("@", "")) && u.password === password
-    );
+    const user = usersList.find(u => (u.email.toLowerCase() === id || u.username.toLowerCase() === id || u.username.toLowerCase() === "@" + id.replace("@","")) && u.password === pass);
 
-    if (!user) {
-        toast("Username/email atau password salah!", "error");
-        return;
-    }
+    if (!user) return alert("Username/email atau password salah!");
 
     currentUser = user;
     localStorage.setItem("fans48_session", JSON.stringify(currentUser));
     updateAuthUI();
-    closeAuthModal();
-    toast("Login berhasil. Selamat datang " + user.name + "!", "success");
+    bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
     renderPage(currentPage);
 });
 
-document.getElementById("registerForm").addEventListener("submit", function(e) {
+document.getElementById("registerForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const name = document.getElementById("regName").value.trim();
-    let username = document.getElementById("regUsername").value.trim().toLowerCase();
-    const email = document.getElementById("regEmail").value.trim().toLowerCase();
-    const password = document.getElementById("regPassword").value;
-
-    if (!username.startsWith("@")) username = "@" + username;
-
-    if (usersList.some(u => u.username.toLowerCase() === username)) {
-        toast("Username sudah digunakan!", "error");
-        return;
-    }
-
-    if (usersList.some(u => u.email.toLowerCase() === email)) {
-        toast("Email sudah terdaftar!", "error");
-        return;
-    }
+    let uname = document.getElementById("regUsername").value.trim().toLowerCase();
+    if (!uname.startsWith("@")) uname = "@" + uname;
 
     const newUser = {
-        name: name,
-        username: username,
-        email: email,
-        password: password,
+        name: document.getElementById("regName").value.trim(),
+        username: uname,
+        email: document.getElementById("regEmail").value.trim().toLowerCase(),
+        password: document.getElementById("regPassword").value,
         role: "pelanggan",
         cash: 0,
         unlockedShows: []
     };
 
-    saveUserToFirebase(newUser).then(() => {
+    const safeKey = uname.replace(/[^a-zA-Z0-9]/g, "_");
+    db.ref('users/' + safeKey).set(newUser).then(() => {
         currentUser = newUser;
         localStorage.setItem("fans48_session", JSON.stringify(currentUser));
         updateAuthUI();
-        closeAuthModal();
-        toast("Akun tersimpan di cloud!", "success");
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
         renderPage("home");
-    }).catch(err => {
-        toast("Gagal mendaftar: " + err.message, "error");
     });
 });
 
@@ -483,12 +350,8 @@ function logout() {
     localStorage.removeItem("fans48_session");
     updateAuthUI();
     renderPage("home");
-    toast("Berhasil keluar.", "success");
 }
 
-/* =========================================
-   UI RENDERING
-========================================= */
 function updateAuthUI() {
     const area = document.getElementById("userArea");
     const adminNav = document.getElementById("nav-admin-item");
@@ -500,209 +363,112 @@ function updateAuthUI() {
     }
 
     if (!currentUser) {
-        area.innerHTML = `
-        <button class="btn btn-danger fw-bold px-3" onclick="openAuthModal()">
-            <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar
-        </button>`;
+        area.innerHTML = `<button class="btn btn-danger fw-bold px-3" onclick="openAuthModal()"><i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar</button>`;
         return;
     }
 
     area.innerHTML = `
-    <div class="cash-badge" onclick="renderPage('topup')">
-        <i class="fa-solid fa-coins me-1"></i>
-        ${(currentUser.cash || 0).toLocaleString()} Cash
-    </div>
-
+    <div class="cash-badge" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1"></i> ${(currentUser.cash || 0)} Cash</div>
     <div class="dropdown">
-        <button class="btn btn-dark border-secondary dropdown-toggle text-white" data-bs-toggle="dropdown">
-            <i class="fa-solid fa-user-circle text-danger me-1"></i>
-            ${escapeHTML(currentUser.name)}
-        </button>
-
+        <button class="btn btn-dark border-secondary dropdown-toggle text-white" data-bs-toggle="dropdown">${currentUser.name}</button>
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-            <li><span class="dropdown-item-text small text-muted">${escapeHTML(currentUser.username)}</span></li>
+            <li><span class="dropdown-item-text small text-muted">${currentUser.username}</span></li>
             <li><hr class="dropdown-divider"></li>
-            ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
-            <li><a class="dropdown-item text-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
+            <li><a class="dropdown-item text-danger" onclick="logout()">Keluar</a></li>
         </ul>
     </div>`;
-}
-
-function canAccessAdmin() {
-    return currentUser && (currentUser.role === "superadmin" || currentUser.role === "admin");
 }
 
 function renderPage(page) {
     currentPage = page;
     document.querySelectorAll(".nav-link").forEach(x => x.classList.remove("active"));
-    const activeNav = document.getElementById("nav-" + page);
-    if (activeNav) activeNav.classList.add("active");
+    const nav = document.getElementById("nav-" + page);
+    if (nav) nav.classList.add("active");
 
-    const container = document.getElementById("main-content");
-
-    if (page === "home") container.innerHTML = getHomeHTML();
-    else if (page === "theater") container.innerHTML = getTheaterHTML();
-    else if (page === "topup") container.innerHTML = getTopupHTML();
-    else if (page === "admin") {
-        if (!canAccessAdmin()) {
-            toast("Akses ditolak!", "error");
-            renderPage("home");
-            return;
-        }
-        container.innerHTML = getAdminHTML();
+    const c = document.getElementById("main-content");
+    if (page === "home") {
+        c.innerHTML = `
+        <div class="p-5 mb-4 rounded-3" style="background: #151821; border: 1px solid var(--card-border);">
+            <h1 class="fw-bold text-white mb-3">Selamat Datang di <span class="text-danger">Fans48</span></h1>
+            <p class="text-muted fs-5">Platform terpadu streaming theater idol favorit Anda.</p>
+            <button class="btn btn-danger btn-lg fw-bold" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
+        </div>`;
+    } else if (page === "theater") {
+        c.innerHTML = `
+        <h3 class="fw-bold mb-3 border-start border-4 border-danger ps-3">Live & Replay Theater</h3>
+        <div class="row g-4">${theaterList.map(t => {
+            const unlocked = currentUser && currentUser.unlockedShows && currentUser.unlockedShows.includes(t.id);
+            return `
+            <div class="col-md-6">
+                <div class="card p-3 h-100">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge ${t.category === "live" ? "bg-danger" : "bg-info text-dark"}">${t.category.toUpperCase()}</span>
+                        <span class="text-muted small">${t.date} • ${t.time}</span>
+                    </div>
+                    <h4 class="fw-bold text-white">${t.setlist}</h4>
+                    <p class="text-danger fw-bold small">${t.team}</p>
+                    <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                        <span class="text-muted small"><i class="fa-solid fa-eye me-1"></i>${t.viewers}</span>
+                        ${unlocked 
+                            ? `<button class="btn btn-success btn-sm fw-bold" onclick="openPlayer('${t.id}')">Putar Show</button>`
+                            : `<button class="btn btn-danger btn-sm fw-bold" onclick="buyShow('${t.id}')">Buka 1 Cash</button>`
+                        }
+                    </div>
+                </div>
+            </div>`;
+        }).join("")}</div>`;
+    } else if (page === "topup") {
+        c.innerHTML = `
+        <h3 class="fw-bold mb-3 border-start border-4 border-warning ps-3">Top Up Cash</h3>
+        <div class="card p-4"><h5 class="text-warning">Cash Hub</h5><p class="text-muted">Pilih paket Top Up Cash yang kamu inginkan.</p></div>`;
+    } else if (page === "admin") {
+        c.innerHTML = `
+        <h3 class="fw-bold mb-3 border-start border-4 border-danger ps-3">Admin Panel</h3>
+        <div class="card p-4">
+            <h5>Daftar Pengguna (Firebase Database)</h5>
+            <table class="table table-dark mt-3">
+                <thead><tr><th>Nama</th><th>Username</th><th>Cash</th><th>Role</th></tr></thead>
+                <tbody>${usersList.map(u => `<tr><td>${u.name}</td><td class="text-warning">${u.username}</td><td>${u.cash || 0}</td><td><span class="badge bg-danger">${u.role}</span></td></tr>`).join("")}</tbody>
+            </table>
+        </div>`;
     }
-}
-
-function getHomeHTML() {
-    return `
-    <div class="p-5 mb-4 rounded-3 text-center text-lg-start" style="background: linear-gradient(135deg, rgba(230,0,18,0.2), #151821); border: 1px solid var(--card-border);">
-        <div class="container-fluid py-3">
-            <h1 class="display-5 fw-bold text-white mb-3">Selamat Datang di <span class="text-danger">Fans48</span></h1>
-            <p class="col-md-8 fs-5 text-muted">Platform terpadu streaming theater idol favorit Anda.</p>
-            <div class="d-flex gap-2">
-                <button class="btn btn-danger btn-lg fw-bold px-4" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
-            </div>
-        </div>
-    </div>`;
-}
-
-function getTheaterHTML() {
-    return `
-    <div class="border-start border-4 border-danger ps-3 mb-4">
-        <h3 class="fw-bold mb-0">Live & Replay Theater</h3>
-        <small class="text-muted">Gunakan 1 Cash untuk membukanya secara permanen.</small>
-    </div>
-    <div class="row g-4">
-        ${theaterList.length ? theaterList.map(renderTheaterCard).join("") : '<p class="text-muted">Memuat data show...</p>'}
-    </div>`;
-}
-
-function renderTheaterCard(t) {
-    const unlocked = currentUser && currentUser.unlockedShows && currentUser.unlockedShows.includes(t.id);
-    return `
-    <div class="col-md-6">
-        <div class="card p-3 h-100">
-            <div class="d-flex justify-content-between mb-2">
-                <span class="badge ${t.category === "live" ? "bg-danger" : "bg-info text-dark"}">${t.category.toUpperCase()}</span>
-                <span class="text-muted small">${t.date} • ${t.time}</span>
-            </div>
-            <h4 class="fw-bold text-white">${escapeHTML(t.setlist)}</h4>
-            <p class="text-danger fw-bold small">${escapeHTML(t.team)}</p>
-            <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-                <span class="text-muted small"><i class="fa-solid fa-eye me-1"></i>${t.viewers}</span>
-                ${unlocked
-                    ? `<button class="btn btn-success btn-sm fw-bold" onclick="openPlayer('${t.id}')"><i class="fa-solid fa-play me-1"></i> Putar Show</button>`
-                    : `<button class="btn btn-danger btn-sm fw-bold" onclick="buyShow('${t.id}')"><i class="fa-solid fa-ticket me-1"></i> Buka 1 Cash</button>`
-                }
-            </div>
-        </div>
-    </div>`;
 }
 
 function buyShow(id) {
-    if (!currentUser) {
-        toast("Silakan login terlebih dahulu!", "error");
-        openAuthModal();
-        return;
-    }
-    if ((currentUser.cash || 0) < 1) {
-        toast("Cash tidak cukup!", "error");
-        renderPage("topup");
-        return;
-    }
+    if (!currentUser) return openAuthModal();
+    if ((currentUser.cash || 0) < 1) return renderPage("topup");
 
     if (!currentUser.unlockedShows) currentUser.unlockedShows = [];
     currentUser.cash--;
     currentUser.unlockedShows.push(id);
 
-    saveUserToFirebase(currentUser).then(() => {
-        toast("Berhasil membuka show!", "success");
-        openPlayer(id);
-    });
-}
-
-function getTopupHTML() {
-    return `
-    <div class="border-start border-4 border-warning ps-3 mb-4">
-        <h3 class="fw-bold mb-0">Top Up Cash</h3>
-    </div>
-    <div class="card p-4 mb-4 border-warning">
-        <h5 class="fw-bold text-warning mb-2"><i class="fa-solid fa-coins me-2"></i>Cash Hub</h5>
-        <p class="text-muted">Pilih paket Top Up Cash yang diinginkan.</p>
-    </div>`;
-}
-
-function getAdminHTML() {
-    return `
-    <div class="border-start border-4 border-danger ps-3 mb-4">
-        <h3 class="fw-bold mb-0">Admin Panel</h3>
-    </div>
-    <div class="card p-4">
-        <h5 class="fw-bold mb-3">Daftar Pengguna Terdaftar (Cloud Server)</h5>
-        <div class="table-responsive">
-            <table class="table table-dark align-middle mb-0">
-                <thead><tr><th>Nama</th><th>Username</th><th>Cash</th><th>Role</th></tr></thead>
-                <tbody>
-                    ${usersList.map(u => `
-                        <tr>
-                            <td>${escapeHTML(u.name)}</td>
-                            <td class="text-warning">${escapeHTML(u.username)}</td>
-                            <td class="fw-bold">${u.cash || 0}</td>
-                            <td><span class="badge bg-danger">${(u.role || 'pelanggan').toUpperCase()}</span></td>
-                        </tr>
-                    `).join("")}
-                </tbody>
-            </table>
-        </div>
-    </div>`;
+    const safeKey = currentUser.username.replace(/[^a-zA-Z0-9]/g, "_");
+    db.ref('users/' + safeKey).set(currentUser).then(() => openPlayer(id));
 }
 
 function openPlayer(id) {
-    let item = theaterList.find(t => t.id === id) || { setlist: "Stream Player", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" };
+    let item = theaterList.find(t => t.id === id) || DEFAULT_THEATER_LIST[0];
     document.getElementById("playerTitle").innerText = item.setlist;
     document.getElementById("streamIframe").src = item.embedUrl;
-    
-    const modalEl = document.getElementById('playerModal');
-    let modal = bootstrap.Modal.getInstance(modalEl);
-    if (!modal) modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    new bootstrap.Modal(document.getElementById('playerModal')).show();
 }
 
 function closePlayer() {
     document.getElementById("streamIframe").src = "";
-    const modalEl = document.getElementById('playerModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) modal.hide();
 }
 
 function sendMessage(e) {
     e.preventDefault();
-    if (!currentUser) return toast("Login untuk mengirim pesan!", "error");
+    if (!currentUser) return openAuthModal();
     const input = document.getElementById("chatInput");
     if (!input.value.trim()) return;
 
     const div = document.createElement("div");
     div.className = "small mb-2 text-white";
-    div.innerHTML = `<span class="text-warning fw-bold">${escapeHTML(currentUser.name)}:</span> <span>${escapeHTML(input.value)}</span>`;
+    div.innerHTML = `<span class="text-warning fw-bold">${currentUser.name}:</span> <span>${input.value}</span>`;
     document.getElementById("chatContainer").appendChild(div);
     input.value = "";
 }
-
-function toast(msg, type) {
-    const el = document.createElement("div");
-    el.className = "position-fixed bottom-0 end-0 p-3";
-    el.style.zIndex = "999999";
-    el.innerHTML = `<div class="alert ${type === "success" ? "alert-success" : "alert-danger"} shadow-lg">${escapeHTML(msg)}</div>`;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
-}
-
-function escapeHTML(str) {
-    return String(str || '').replace(/[&<>'"]/g, tag => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-    }[tag]));
-}
 </script>
-
 </body>
 </html>
