@@ -3,588 +3,1320 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fans48 - Streaming & Top Up Cash Hub</title>
+<title>Fans48 - Streaming & Top Up Cash Hub (Firebase Integrated)</title>
 
-<!-- BOOTSTRAP 5 & FONTAWESOME -->
+<!-- Bootstrap & FontAwesome -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- FIREBASE SDK COMPAT -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <style>
 :root {
-    --primary-color: #e60012;
-    --dark-bg: #0b0c10;
-    --card-bg: #151821;
-    --card-border: #262b3a;
-    --text-color: #ffffff;
-    --accent-gold: #ffb703;
+    --primary-color:#e60012;
+    --primary-glow:rgba(230,0,18,.4);
+    --dark-bg:#0b0c10;
+    --card-bg:#151821;
+    --card-border:#262b3a;
+    --text-color:#f1f1f1;
+    --muted-color:#a0a5b5;
+    --accent-gold:#ffb703;
 }
 
 body {
-    background-color: var(--dark-bg);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
+    background:var(--dark-bg);
+    color:var(--text-color);
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    transition:.3s;
 }
 
-.modal-content {
-    background-color: #151821 !important;
-    color: #ffffff !important;
-    border: 1px solid var(--card-border) !important;
-    border-radius: 16px;
+body.light-mode {
+    --dark-bg:#f3f4f6;
+    --card-bg:#ffffff;
+    --card-border:#d9dce3;
+    --text-color:#171717;
+    --muted-color:#626975;
 }
 
-.modal-header, .modal-footer {
-    border-color: var(--card-border) !important;
+body.light-mode .navbar {
+    background:rgba(255,255,255,.9);
+}
+
+body.light-mode .navbar-brand,
+body.light-mode .card,
+body.light-mode .fw-bold,
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6 {
+    color:var(--text-color)!important;
+}
+
+body.light-mode .form-control,
+body.light-mode .form-select {
+    background:#fff!important;
+    color:#111!important;
+}
+
+body.light-mode .dropdown-menu {
+    background:#fff!important;
+}
+
+body.light-mode .dropdown-item {
+    color:#111!important;
 }
 
 .navbar {
-    background-color: #10121a !important;
-    border-bottom: 1px solid var(--card-border);
+    background:rgba(11,12,16,.88);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--card-border);
 }
 
-.navbar-brand { font-weight: 800; color: #ffffff !important; }
-.navbar-brand span { color: var(--primary-color); }
+.navbar-brand {
+    font-weight:800;
+    color:#fff!important;
+}
+
+.navbar-brand span {
+    color:var(--primary-color);
+}
 
 .nav-link {
-    color: #a0a5b5 !important;
-    font-weight: 600;
-    padding: 0.5rem 1rem !important;
-    border-radius: 8px;
-    cursor: pointer;
+    color:var(--muted-color)!important;
+    font-weight:600;
+    padding:.5rem 1rem!important;
+    border-radius:8px;
+    transition: all 0.2s ease-in-out;
 }
 
-.nav-link:hover, .nav-link.active {
-    color: #ffffff !important;
-    background: var(--primary-color);
+.nav-link:hover {
+    color:#fff!important;
+    background:rgba(255,255,255,.05);
+}
+
+.nav-link.active {
+    color:#fff!important;
+    background:linear-gradient(135deg,var(--primary-color),#b3000e);
+}
+
+#main-content {
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#main-content.page-hidden {
+    opacity: 0;
+    transform: translateY(12px);
 }
 
 .card {
-    background-color: var(--card-bg) !important;
-    border: 1px solid var(--card-border) !important;
-    color: #ffffff !important;
-    border-radius: 14px;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    color:var(--text-color);
+    transition:.3s;
 }
 
-.form-control, .form-select {
-    background-color: #0b0c10 !important;
-    border: 1px solid var(--card-border) !important;
-    color: #ffffff !important;
+.card:hover {
+    border-color:rgba(230,0,18,.5);
 }
 
-.form-control:focus, .form-select:focus {
-    border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 0.25rem rgba(230,0,18,0.25) !important;
+.hero-banner {
+    background: linear-gradient(135deg, rgba(230,0,18,0.2), rgba(15,18,25,0.9)), var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 30px;
+}
+
+.feature-card {
+    height: 100%;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-color);
+}
+
+.topup-card {
+    position:relative;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+    transition:.3s;
+    cursor:pointer;
+}
+
+.topup-card:hover {
+    transform:translateY(-5px);
+    border-color:var(--accent-gold);
+}
+
+.topup-card.popular {
+    border-color:var(--primary-color);
+}
+
+.badge-popular {
+    position:absolute;
+    top:0;
+    right:0;
+    background:var(--primary-color);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:bold;
+    padding:4px 12px;
+    border-bottom-left-radius:10px;
 }
 
 .cash-badge {
-    background: #1e2330;
-    border: 1px solid var(--accent-gold);
-    color: var(--accent-gold);
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
+    background:linear-gradient(135deg,#1e2330,#13161f);
+    border:1px solid var(--accent-gold);
+    color:var(--accent-gold);
+    font-weight:700;
+    padding:6px 16px;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+.form-control,
+.form-select {
+    background:#11131a!important;
+    border:1px solid var(--card-border)!important;
+    color:#fff!important;
+    border-radius:10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color:var(--primary-color)!important;
+    box-shadow:0 0 10px var(--primary-glow)!important;
+}
+
+.section-title {
+    border-left:5px solid var(--primary-color);
+    padding-left:12px;
+    margin-bottom:24px;
+}
+
+.modal-content {
+    background:var(--card-bg);
+    color:var(--text-color);
+    border:1px solid var(--card-border);
+    border-radius:20px;
+}
+
+.badge-live {
+    background:var(--primary-color);
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%,100% {opacity:1}
+    50% {opacity:.6}
+}
+
+.member-img {
+    height:240px;
+    object-fit:cover;
 }
 
 .ratio-16x9 {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-    background: #000;
+    position:relative;
+    width:100%;
+    padding-top:56.25%;
+    background:#000;
 }
 
 .ratio-16x9 iframe {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%; border: 0;
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
 }
 
 .chat-box {
-    height: 320px;
-    overflow-y: auto;
-    background-color: #0b0c10;
+    height:350px;
+    overflow-y:auto;
+    background:#0e1017;
+}
+
+.settings-color {
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:3px solid transparent;
+    cursor:pointer;
+}
+
+.settings-color.active {
+    border-color:#fff;
+    box-shadow:0 0 0 2px #000;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+<nav class="navbar navbar-expand-lg sticky-top">
 <div class="container">
-    <a class="navbar-brand fs-4" href="javascript:void(0)" onclick="renderPage('home')">
-        <i class="fa-solid fa-bolt text-danger me-2"></i>Fans<span>48</span>
-    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<a class="navbar-brand fs-4" href="#" onclick="window.renderPage('home')">
+<i class="fa-solid fa-bolt text-danger me-2"></i>
+Fans<span>48</span>
+</a>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" id="nav-home" onclick="renderPage('home')"><i class="fa-solid fa-house me-1"></i> Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="nav-theater" onclick="renderPage('theater')"><i class="fa-solid fa-building-columns me-1"></i> Live Theater</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="nav-topup" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1 text-warning"></i> Top Up Cash</a>
-            </li>
-            <li class="nav-item d-none" id="nav-admin-item">
-                <a class="nav-link text-danger fw-bold" id="nav-admin" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-1"></i> Admin Panel</a>
-            </li>
-        </ul>
+<button class="navbar-toggler border-0 text-white"
+data-bs-toggle="collapse"
+data-bs-target="#navbarNav"> <i class="fa-solid fa-bars"></i> </button>
 
-        <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
-    </div>
+<div class="collapse navbar-collapse" id="navbarNav">
+
+<ul class="navbar-nav me-auto gap-2 mt-2 mt-lg-0">
+
+<li class="nav-item">
+<a class="nav-link active" id="nav-home"
+href="#" onclick="window.renderPage('home')">
+<i class="fa-solid fa-house me-1"></i>
+Home
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" id="nav-theater"
+href="#" onclick="window.renderPage('theater')">
+<i class="fa-solid fa-building-columns me-1"></i>
+Live Theater
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" id="nav-member-live"
+href="#" onclick="window.renderPage('memberLive')">
+<i class="fa-solid fa-tower-broadcast me-1"></i>
+Live Member
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" id="nav-member"
+href="#" onclick="window.renderPage('member')">
+<i class="fa-solid fa-users me-1"></i>
+Member
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" id="nav-topup"
+href="#" onclick="window.renderPage('topup')">
+<i class="fa-solid fa-coins me-1 text-warning"></i>
+Top Up Cash
+</a>
+</li>
+
+<li class="nav-item d-none" id="nav-admin-item">
+<a class="nav-link text-danger fw-bold"
+id="nav-admin"
+href="#" onclick="window.renderPage('admin')">
+<i class="fa-solid fa-user-shield me-1"></i>
+Admin Panel
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" id="nav-settings" href="#" onclick="window.renderPage('settings')">
+<i class="fa-solid fa-gear me-1"></i>
+Settings
+</a>
+</li>
+
+</ul>
+
+<div class="d-flex align-items-center gap-3 mt-3 mt-lg-0" id="userArea"></div>
+
+</div>
 </div>
 </nav>
 
-<!-- MAIN CONTAINER -->
 <div class="container my-4" id="main-content"></div>
 
 <!-- AUTH MODAL -->
-<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-3">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="authTitle"><i class="fa-solid fa-right-to-bracket text-danger me-2"></i> Login Akun</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <!-- LOGIN -->
-        <form id="loginForm">
-          <div class="mb-3">
-            <label class="form-label">Username / Email</label>
-            <input id="loginIdentifier" class="form-control" placeholder="@username atau email" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input id="loginPassword" type="password" class="form-control" placeholder="••••••••" required>
-          </div>
-          <button type="submit" class="btn btn-danger w-100 fw-bold mt-2">Masuk</button>
-          <div class="text-center mt-3">
-            <small>Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a></small>
-          </div>
-        </form>
+<div class="modal fade" id="authModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content p-3">
 
-        <!-- REGISTER -->
-        <form id="registerForm" class="d-none">
-          <div class="mb-3">
-            <label class="form-label">Nama Lengkap</label>
-            <input id="regName" class="form-control" placeholder="Nama Lengkap" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input id="regEmail" type="email" class="form-control" placeholder="email@domain.com" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input id="regPassword" type="password" class="form-control" placeholder="••••••••" required>
-          </div>
-          <button type="submit" class="btn btn-warning text-dark w-100 fw-bold mt-2">Buat Akun</button>
-          <div class="text-center mt-3">
-            <small>Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-danger fw-bold">Login</a></small>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+<div class="modal-header border-0">
+<h5 class="modal-title fw-bold" id="authTitle">
+<i class="fa-solid fa-right-to-bracket text-danger me-2"></i>
+Login Akun
+</h5>
+<button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+
+<form id="loginForm">
+<div class="mb-3">
+<label>Email</label>
+<input id="loginEmail" type="email" class="form-control" placeholder="nama@email.com" required>
+</div>
+
+<div class="mb-3">
+<label>Password</label>
+<input id="loginPassword" type="password" class="form-control" required>
+</div>
+
+<button type="submit" class="btn btn-danger w-100 fw-bold">Masuk</button>
+
+<div class="text-center mt-3">
+<small>
+Belum punya akun?
+<a href="#" onclick="window.toggleAuth('register')" class="text-warning fw-bold">Daftar sekarang</a>
+</small>
+</div>
+</form>
+
+<form id="registerForm" class="d-none">
+
+<div class="mb-3">
+<label>Nama Lengkap</label>
+<input id="regName" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Username</label>
+<input id="regUsername" class="form-control" placeholder="contoh: wota48" required>
+</div>
+
+<div class="mb-3">
+<label>Email</label>
+<input id="regEmail" type="email" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Password</label>
+<input id="regPassword" type="password" class="form-control" required>
+</div>
+
+<button type="submit" class="btn btn-warning text-dark w-100 fw-bold">Buat Akun</button>
+
+<div class="text-center mt-3">
+<small>
+Sudah punya akun?
+<a href="#" onclick="window.toggleAuth('login')" class="text-danger fw-bold">Login</a>
+</small>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
 </div>
 
 <!-- PLAYER MODAL -->
-<div class="modal fade" id="playerModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content overflow-hidden">
-      <div class="modal-header bg-dark">
-        <h6 class="modal-title text-white" id="playerTitle">Streaming Player</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="closePlayer()"></button>
-      </div>
-      <div class="modal-body p-0">
-        <div class="row g-0">
-          <div class="col-lg-8">
-            <div class="ratio-16x9">
-              <iframe id="streamIframe" allowfullscreen allow="autoplay"></iframe>
-            </div>
-          </div>
-          <div class="col-lg-4 d-flex flex-column" style="background:#151821;">
-            <div class="p-2 bg-dark border-bottom text-white">
-              <i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
-            </div>
-            <div class="chat-box p-3 flex-grow-1" id="chatContainer"></div>
-            <form class="p-2 bg-dark d-flex gap-2" onsubmit="sendMessage(event)">
-              <input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
-              <button type="submit" class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" id="playerModal" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered">
+<div class="modal-content overflow-hidden">
+
+<div class="modal-header bg-dark">
+<h6 class="modal-title" id="playerTitle"></h6>
+<button class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="window.closePlayer()"></button>
+</div>
+
+<div class="modal-body p-0">
+<div class="row g-0">
+
+<div class="col-lg-8">
+<div class="ratio-16x9">
+<iframe id="streamIframe" allowfullscreen allow="autoplay"></iframe>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="p-2 bg-dark border-bottom">
+<i class="fa-solid fa-comments text-danger me-2"></i>Live Chat
+</div>
+
+<div class="chat-box p-3" id="chatContainer"></div>
+
+<form class="p-2 bg-dark d-flex gap-2" onsubmit="window.sendMessage(event)">
+<input id="chatInput" class="form-control" placeholder="Tulis pesan..." required>
+<button class="btn btn-danger"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+</div>
+
+</div>
+</div>
+</div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-/* FIREBASE CONFIGURATION */
-const firebaseConfig = {
-  apiKey: "AIzaSyCEZev9CKBLXgNcDSlpD4wjDMomzLIlCYc",
-  authDomain: "fans-48-project.firebaseapp.com",
-  databaseURL: "https://fans-48-project-default-rtdb.firebaseio.com",
-  projectId: "fans-48-project",
-  storageBucket: "fans-48-project.firebasestorage.app",
-  messagingSenderId: "947248601631",
-  appId: "1:947248601631:web:9d846644ee439cbd8fd32a",
-  measurementId: "G-519WHGEDS9"
-};
+<!-- FIREBASE INTEGRATION MODULE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    setDoc, 
+    updateDoc, 
+    collection, 
+    onSnapshot, 
+    addDoc, 
+    deleteDoc, 
+    query, 
+    orderBy, 
+    serverTimestamp,
+    arrayUnion
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  // =========================================
+  // GANTI KONFIGURASI PROYEK FIREBASE ANDA
+  // =========================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyYOUR_API_KEY_HERE",
+    authDomain: "your-app.firebaseapp.com",
+    projectId: "your-app-id",
+    storageBucket: "your-app.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef123456"
+  };
 
-/* DEFAULT MOCK DATA (GAK AKAN HILANG) */
-const DEFAULT_SUPERADMIN = {
-    email: "admin@fans48.com",
-    username: "@superadmin",
-    name: "Super Admin",
-    password: "admin123",
-    role: "superadmin",
-    cash: 999999,
-    unlockedShows: []
-};
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-const DEFAULT_THEATER_LIST = [
-    { id: "th-1", setlist: "Cara Meminum Ramune", team: "JKT48 New Era", date: "Hari Ini", time: "19:00 WIB", category: "live", viewers: "14.2k", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" },
-    { id: "th-2", setlist: "Aturan Anti Cinta", team: "JKT48 New Era", date: "Besok", time: "19:00 WIB", category: "upcoming", viewers: "-", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" }
-];
+  // State Aplikasi
+  let currentUserData = null;
+  let firebaseUser = null;
+  let theaterList = [];
+  let redeemCodes = [];
+  let usersList = [];
+  let currentPage = "home";
+  let activeChatUnsubscribe = null;
+  let activeShowId = null;
 
-let usersList = [];
-let theaterList = DEFAULT_THEATER_LIST;
-let currentUser = JSON.parse(localStorage.getItem("fans48_session")) || null;
-let currentPage = "home";
+  let settings = JSON.parse(localStorage.getItem("fans48_settings")) || {
+    theme: "dark",
+    fontColor: "#f1f1f1"
+  };
 
-/* INIT & SYNC FIREBASE */
-document.addEventListener("DOMContentLoaded", () => {
-    updateAuthUI();
-    renderPage('home');
-    syncFirebase();
-});
+  const members = [
+    { stageName: "Freya", fullName: "Freyana Jayawardana", team: "New Era", img: "https://via.placeholder.com/300x400/e60012/FFFFFF?text=Freya" },
+    { stageName: "Christy", fullName: "Angelina Christy", team: "New Era", img: "https://via.placeholder.com/300x400/e60012/FFFFFF?text=Christy" }
+  ];
 
-function syncFirebase() {
-    // Sync Users
-    db.ref('users').on('value', (snapshot) => {
-        const data = snapshot.val();
-        usersList = data ? Object.values(data) : [];
+  let authModal;
+  let playerModal;
 
-        // Buat Superadmin default jika belum ada
-        if (!usersList.some(u => u.username === "@superadmin")) {
-            db.ref('users/superadmin').set(DEFAULT_SUPERADMIN);
-        }
+  document.addEventListener("DOMContentLoaded", () => {
+    authModal = new bootstrap.Modal(document.getElementById("authModal"));
+    playerModal = new bootstrap.Modal(document.getElementById("playerModal"));
 
-        if (currentUser) {
-            const myData = usersList.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-            if (myData) {
-                currentUser = myData;
-                localStorage.setItem("fans48_session", JSON.stringify(currentUser));
-            }
-        }
+    applySettings();
+    initRealtimeListeners();
 
-        updateAuthUI();
-        if (currentPage === "admin") renderPage("admin");
+    onAuthStateChanged(auth, async (user) => {
+      firebaseUser = user;
+      if (user) {
+        await fetchUserData(user.uid);
+      } else {
+        currentUserData = null;
+      }
+      updateAuthUI();
+      renderPage(currentPage);
     });
+  });
 
-    // Sync Theater List
-    db.ref('theater').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            theaterList = Object.values(data);
-        } else {
-            DEFAULT_THEATER_LIST.forEach(t => db.ref('theater/' + t.id).set(t));
-        }
-        if (currentPage === "theater" || currentPage === "home") renderPage(currentPage);
-    });
-}
-
-/* AUTHENTICATION SYSTEM */
-function openAuthModal() {
-    toggleAuth('login');
-    new bootstrap.Modal(document.getElementById('authModal')).show();
-}
-
-function toggleAuth(type) {
-    if (type === "register") {
-        document.getElementById("loginForm").classList.add("d-none");
-        document.getElementById("registerForm").classList.remove("d-none");
-        document.getElementById("authTitle").innerHTML = '<i class="fa-solid fa-user-plus text-warning me-2"></i>Daftar Akun';
-    } else {
-        document.getElementById("registerForm").classList.add("d-none");
-        document.getElementById("loginForm").classList.remove("d-none");
-        document.getElementById("authTitle").innerHTML = '<i class="fa-solid fa-right-to-bracket text-danger me-2"></i>Login Akun';
+  async function fetchUserData(uid) {
+    const userDocRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userDocRef);
+    if (userSnap.exists()) {
+      currentUserData = { uid, ...userSnap.data() };
     }
-}
+  }
 
-document.getElementById("loginForm").addEventListener("submit", (e) => {
+  function initRealtimeListeners() {
+    // Synchronize Theater Shows
+    onSnapshot(collection(db, "theater"), (snapshot) => {
+      theaterList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (currentPage === "theater" || currentPage === "admin") {
+        renderPage(currentPage);
+      }
+    });
+
+    // Synchronize Redeem Codes
+    onSnapshot(collection(db, "redeemCodes"), (snapshot) => {
+      redeemCodes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (currentPage === "topup" || currentPage === "admin") {
+        renderPage(currentPage);
+      }
+    });
+
+    // Synchronize Users List
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (currentPage === "admin") {
+        renderPage(currentPage);
+      }
+      if (firebaseUser) {
+        const found = usersList.find(u => u.id === firebaseUser.uid);
+        if (found) {
+          currentUserData = found;
+          updateAuthUI();
+        }
+      }
+    });
+  }
+
+  // Exposed Global Window Methods
+  window.openAuth = function() {
+    window.toggleAuth("login");
+    authModal.show();
+  };
+
+  window.toggleAuth = function(type) {
+    const login = document.getElementById("loginForm");
+    const register = document.getElementById("registerForm");
+    const title = document.getElementById("authTitle");
+
+    if (type === "register") {
+      login.classList.add("d-none");
+      register.classList.remove("d-none");
+      title.innerHTML = '<i class="fa-solid fa-user-plus text-warning me-2"></i>Daftar Akun';
+    } else {
+      register.classList.add("d-none");
+      login.classList.remove("d-none");
+      title.innerHTML = '<i class="fa-solid fa-right-to-bracket text-danger me-2"></i>Login Akun';
+    }
+  };
+
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-    const id = document.getElementById("loginIdentifier").value.trim().toLowerCase();
-    const pass = document.getElementById("loginPassword").value;
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
 
-    const user = usersList.find(u => 
-        (u.email.toLowerCase() === id || u.username.toLowerCase() === id || u.username.toLowerCase() === "@" + id.replace("@","")) && u.password === pass
-    );
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      authModal.hide();
+      toast("Login berhasil!", "success");
+    } catch (error) {
+      toast("Gagal login: " + error.message, "error");
+    }
+  });
 
-    if (!user) return alert("Username/email atau password salah!");
-
-    currentUser = user;
-    localStorage.setItem("fans48_session", JSON.stringify(currentUser));
-    updateAuthUI();
-    bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
-    renderPage(currentPage);
-});
-
-document.getElementById("registerForm").addEventListener("submit", (e) => {
+  document.getElementById("registerForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-    let uname = document.getElementById("regUsername").value.trim().toLowerCase();
-    if (!uname.startsWith("@")) uname = "@" + uname;
+    const name = document.getElementById("regName").value.trim();
+    let username = document.getElementById("regUsername").value.trim().toLowerCase();
+    const email = document.getElementById("regEmail").value.trim().toLowerCase();
+    const password = document.getElementById("regPassword").value;
 
-    if (usersList.some(u => u.username.toLowerCase() === uname)) return alert("Username sudah digunakan!");
+    if (!username.startsWith("@")) username = "@" + username;
 
-    const newUser = {
-        name: document.getElementById("regName").value.trim(),
-        username: uname,
-        email: document.getElementById("regEmail").value.trim().toLowerCase(),
-        password: document.getElementById("regPassword").value,
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      const newUser = {
+        name,
+        username,
+        email,
         role: "pelanggan",
         cash: 0,
         unlockedShows: []
-    };
+      };
 
-    const safeKey = uname.replace(/[^a-zA-Z0-9]/g, "_");
-    db.ref('users/' + safeKey).set(newUser).then(() => {
-        currentUser = newUser;
-        localStorage.setItem("fans48_session", JSON.stringify(currentUser));
-        updateAuthUI();
-        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
-        renderPage("home");
-    });
-});
+      await setDoc(doc(db, "users", uid), newUser);
+      currentUserData = { uid, ...newUser };
 
-function logout() {
-    currentUser = null;
-    localStorage.removeItem("fans48_session");
-    updateAuthUI();
-    renderPage("home");
-}
+      authModal.hide();
+      toast("Akun berhasil dibuat!", "success");
+      renderPage("home");
+    } catch (error) {
+      toast("Gagal pendaftaran: " + error.message, "error");
+    }
+  });
 
-/* NAVBAR & UI STATE */
-function updateAuthUI() {
+  window.logout = async function() {
+    try {
+      await signOut(auth);
+      toast("Berhasil keluar.", "success");
+      renderPage("home");
+    } catch (error) {
+      toast("Gagal keluar: " + error.message, "error");
+    }
+  };
+
+  function updateAuthUI() {
     const area = document.getElementById("userArea");
     const adminNav = document.getElementById("nav-admin-item");
 
-    // TAMPILKAN TOMBOL ADMIN KALAU USER ADALAH ADMIN/SUPERADMIN
-    if (currentUser && (currentUser.role === "superadmin" || currentUser.role === "admin")) {
-        adminNav.classList.remove("d-none");
+    if (currentUserData && (currentUserData.role === "superadmin" || currentUserData.role === "admin")) {
+      adminNav.classList.remove("d-none");
     } else {
-        adminNav.classList.add("d-none");
+      adminNav.classList.add("d-none");
     }
 
-    if (!currentUser) {
-        area.innerHTML = `<button class="btn btn-danger fw-bold px-3" onclick="openAuthModal()"><i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar</button>`;
-        return;
+    if (!currentUserData) {
+      area.innerHTML = `
+      <button class="btn btn-outline-light fw-bold" onclick="window.openAuth()">
+        <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Daftar
+      </button>`;
+      return;
     }
 
     area.innerHTML = `
-    <div class="cash-badge" onclick="renderPage('topup')"><i class="fa-solid fa-coins me-1"></i> ${(currentUser.cash || 0).toLocaleString()} Cash</div>
-    <div class="dropdown">
-        <button class="btn btn-dark border-secondary dropdown-toggle text-white" data-bs-toggle="dropdown">
-            <i class="fa-solid fa-user-circle text-danger me-1"></i> ${currentUser.name}
-        </button>
-        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-            <li><span class="dropdown-item-text small text-muted">${currentUser.username} (${currentUser.role || 'user'})</span></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" onclick="renderPage('settings')"><i class="fa-solid fa-gear me-2"></i>Pengaturan Akun</a></li>
-            ${(currentUser.role === 'admin' || currentUser.role === 'superadmin') ? `<li><a class="dropdown-item text-danger fw-bold" onclick="renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ''}
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
-        </ul>
-    </div>`;
-}
+    <div class="cash-badge" onclick="window.renderPage('topup')">
+      <i class="fa-solid fa-coins me-1"></i>
+      ${currentUserData.cash.toLocaleString()} Cash
+    </div>
 
-/* PAGE ROUTER */
-function renderPage(page) {
+    <div class="dropdown">
+      <button class="btn btn-dark border-secondary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="fa-solid fa-user-circle text-danger me-1"></i>
+        ${escapeHTML(currentUserData.name)}
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <li><span class="dropdown-item-text">${escapeHTML(currentUserData.username)}</span></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" onclick="window.renderPage('settings')"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
+        ${canAccessAdmin() ? `<li><a class="dropdown-item text-danger fw-bold" href="#" onclick="window.renderPage('admin')"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</a></li>` : ""}
+        <li><a class="dropdown-item text-danger" href="#" onclick="window.logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a></li>
+      </ul>
+    </div>`;
+  }
+
+  function canAccessAdmin() {
+    return currentUserData && (currentUserData.role === "superadmin" || currentUserData.role === "admin");
+  }
+
+  window.renderPage = function(page) {
     currentPage = page;
     document.querySelectorAll(".nav-link").forEach(x => x.classList.remove("active"));
-    const nav = document.getElementById("nav-" + page);
-    if (nav) nav.classList.add("active");
+    const activeNav = document.getElementById("nav-" + (page === "memberLive" ? "member-live" : page));
+    if (activeNav) activeNav.classList.add("active");
 
-    const c = document.getElementById("main-content");
+    const container = document.getElementById("main-content");
+    container.classList.add("page-hidden");
 
-    if (page === "home") {
-        c.innerHTML = `
-        <div class="p-5 mb-4 rounded-3" style="background: linear-gradient(135deg, rgba(230,0,18,0.2), #151821); border: 1px solid var(--card-border);">
-            <h1 class="fw-bold text-white mb-3">Selamat Datang di <span class="text-danger">Fans48</span></h1>
-            <p class="text-muted fs-5">Platform terpadu streaming setlist theater idol favorit Anda.</p>
-            <button class="btn btn-danger btn-lg fw-bold px-4" onclick="renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
-        </div>`;
-    } 
-    else if (page === "theater") {
-        c.innerHTML = `
-        <h3 class="fw-bold mb-3 border-start border-4 border-danger ps-3">Live & Replay Theater</h3>
-        <div class="row g-4">${theaterList.map(t => {
-            const unlocked = currentUser && currentUser.unlockedShows && currentUser.unlockedShows.includes(t.id);
-            return `
-            <div class="col-md-6">
-                <div class="card p-3 h-100">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge ${t.category === "live" ? "bg-danger" : "bg-info text-dark"}">${t.category.toUpperCase()}</span>
-                        <span class="text-muted small">${t.date} • ${t.time}</span>
-                    </div>
-                    <h4 class="fw-bold text-white">${t.setlist}</h4>
-                    <p class="text-danger fw-bold small">${t.team}</p>
-                    <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-                        <span class="text-muted small"><i class="fa-solid fa-eye me-1"></i>${t.viewers}</span>
-                        ${unlocked 
-                            ? `<button class="btn btn-success btn-sm fw-bold" onclick="openPlayer('${t.id}')"><i class="fa-solid fa-play me-1"></i> Putar Show</button>`
-                            : `<button class="btn btn-danger btn-sm fw-bold" onclick="buyShow('${t.id}')"><i class="fa-solid fa-ticket me-1"></i> Buka 1 Cash</button>`
-                        }
-                    </div>
-                </div>
-            </div>`;
-        }).join("")}</div>`;
-    } 
-    else if (page === "topup") {
-        c.innerHTML = `
-        <h3 class="fw-bold mb-3 border-start border-4 border-warning ps-3">Top Up Cash</h3>
-        <div class="card p-4">
-            <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-coins me-2"></i>Pilih Paket Top Up</h5>
-            <p class="text-muted">Isi saldo Cash kamu untuk membuka acara Live Theater eksklusif.</p>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="card p-3 text-center border-warning">
-                        <h4 class="fw-bold text-warning">5 Cash</h4>
-                        <p class="mb-2">Rp 10.000</p>
-                        <button class="btn btn-warning text-dark fw-bold btn-sm" onclick="addCash(5)">Beli Sekarang</button>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 text-center border-warning">
-                        <h4 class="fw-bold text-warning">12 Cash</h4>
-                        <p class="mb-2">Rp 20.000</p>
-                        <button class="btn btn-warning text-dark fw-bold btn-sm" onclick="addCash(12)">Beli Sekarang</button>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    } 
-    else if (page === "settings") {
-        c.innerHTML = `
-        <h3 class="fw-bold mb-3 border-start border-4 border-primary ps-3">Pengaturan Akun</h3>
-        <div class="card p-4">
-            <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-gear me-2"></i>Profil Saya</h5>
-            <form onsubmit="updateProfile(event)">
-                <div class="mb-3">
-                    <label class="form-label">Nama Lengkap</label>
-                    <input id="setNama" class="form-control" value="${currentUser ? currentUser.name : ''}" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input class="form-control" value="${currentUser ? currentUser.email : ''}" disabled>
-                </div>
-                <button type="submit" class="btn btn-primary fw-bold">Simpan Perubahan</button>
-            </form>
-        </div>`;
-    } 
-    else if (page === "admin") {
-        c.innerHTML = `
-        <h3 class="fw-bold mb-3 border-start border-4 border-danger ps-3">Admin Panel</h3>
-        <div class="card p-4 mb-4">
-            <h5 class="text-danger fw-bold"><i class="fa-solid fa-users me-2"></i>Kelola User (Cloud Database)</h5>
-            <div class="table-responsive">
-                <table class="table table-dark mt-3 align-middle">
-                    <thead><tr><th>Nama</th><th>Username</th><th>Cash</th><th>Role</th><th>Aksi Cash</th></tr></thead>
-                    <tbody>${usersList.map(u => `
-                        <tr>
-                            <td>${u.name}</td>
-                            <td class="text-warning">${u.username}</td>
-                            <td class="fw-bold text-success">${u.cash || 0}</td>
-                            <td><span class="badge ${u.role === 'superadmin' ? 'bg-danger' : (u.role === 'admin' ? 'bg-warning text-dark' : 'bg-secondary')}">${u.role || 'pelanggan'}</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-warning" onclick="adminGiveCash('${u.username}')">+5 Cash</button>
-                            </td>
-                        </tr>`).join("")}
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
+    setTimeout(() => {
+      if (page === "home") container.innerHTML = getHomeHTML();
+      else if (page === "theater") container.innerHTML = getTheaterHTML();
+      else if (page === "memberLive") container.innerHTML = getMemberLiveHTML();
+      else if (page === "member") container.innerHTML = getMemberHTML();
+      else if (page === "topup") container.innerHTML = getTopupHTML();
+      else if (page === "admin") {
+        if (!canAccessAdmin()) {
+          toast("Akses ditolak!", "error");
+          window.renderPage("home");
+          return;
+        }
+        container.innerHTML = getAdminHTML();
+      } else if (page === "settings") container.innerHTML = getSettingsHTML();
+
+      container.classList.remove("page-hidden");
+    }, 200);
+  };
+
+  function getHomeHTML() {
+    return `
+    <div class="hero-banner mb-5 text-center text-lg-start">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold mb-3">Selamat Datang di <span class="text-danger">Fans48</span> Hub</h1>
+          <p class="lead text-muted mb-4">Platform terpadu streaming theater interaktif, siaran member, serta penukaran kode promo secara real-time melalui Firebase!</p>
+          <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+            <button class="btn btn-danger btn-lg fw-bold px-4" onclick="window.renderPage('theater')"><i class="fa-solid fa-play me-2"></i>Nonton Theater</button>
+            <button class="btn btn-outline-warning btn-lg fw-bold px-4" onclick="window.renderPage('topup')"><i class="fa-solid fa-gift me-2"></i>Kode Redeem</button>
+          </div>
+        </div>
+        <div class="col-lg-4 d-none d-lg-block text-center fs-1 text-danger">
+          <i class="fa-solid fa-heart-pulse fa-5x opacity-75"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-star text-warning me-2"></i>Fitur Unggulan Fans48</h3>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-4 feature-card">
+          <div class="text-danger fs-1 mb-3"><i class="fa-solid fa-building-columns"></i></div>
+          <h5 class="fw-bold">Live & Replay Theater</h5>
+          <p class="text-muted small">Akses siaran theater langsung dan rekaman pertunjukan secara instan.</p>
+          <button class="btn btn-sm btn-outline-danger mt-auto align-self-start fw-bold" onclick="window.renderPage('theater')">Lihat Show <i class="fa-solid fa-arrow-right ms-1"></i></button>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-4 feature-card">
+          <div class="text-danger fs-1 mb-3"><i class="fa-solid fa-tower-broadcast"></i></div>
+          <h5 class="fw-bold">Live Streaming Member</h5>
+          <p class="text-muted small">Saksikan siaran individu para member langsung dari aplikasi.</p>
+          <button class="btn btn-sm btn-outline-danger mt-auto align-self-start fw-bold" onclick="window.renderPage('memberLive')">Tonton Live <i class="fa-solid fa-arrow-right ms-1"></i></button>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-4 feature-card">
+          <div class="text-warning fs-1 mb-3"><i class="fa-solid fa-coins"></i></div>
+          <h5 class="fw-bold">Top Up & Kode Redeem</h5>
+          <p class="text-muted small">Tambahkan saldo Cash atau klaim bonus saldo lewat voucher admin.</p>
+          <button class="btn btn-sm btn-outline-warning mt-auto align-self-start fw-bold" onclick="window.renderPage('topup')">Top Up Sekarang <i class="fa-solid fa-arrow-right ms-1"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function getTheaterHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-building-columns text-danger me-2"></i>Live & Replay Theater</h3>
+      <small class="text-muted">Bayar 1 Cash untuk membuka akses per pertunjukan.</small>
+    </div>
+    <div class="row g-4">
+      ${theaterList.length === 0 ? '<div class="col-12 text-muted">Belum ada pertunjukan tersedia.</div>' : theaterList.map(renderTheaterCard).join("")}
+    </div>`;
+  }
+
+  function renderTheaterCard(t) {
+    const unlocked = currentUserData && currentUserData.unlockedShows && currentUserData.unlockedShows.includes(t.id);
+    return `
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <span class="badge ${t.category === "live" ? "badge-live" : t.category === "upcoming" ? "bg-warning text-dark" : "bg-info text-dark"}">
+            ${t.category === "live" ? "LIVE NOW" : t.category === "upcoming" ? "UPCOMING" : "REPLAY"}
+          </span>
+          <span class="text-muted small">${escapeHTML(t.date || "")} • ${escapeHTML(t.time || "")}</span>
+        </div>
+        <h4 class="fw-bold">${escapeHTML(t.setlist || "")}</h4>
+        <p class="text-danger fw-bold">${escapeHTML(t.team || "")}</p>
+        <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+          <span class="text-muted"><i class="fa-solid fa-eye"></i> ${escapeHTML(t.viewers || "-")}</span>
+          ${t.category === "upcoming"
+            ? `<button class="btn btn-secondary btn-sm" disabled><i class="fa-solid fa-clock me-1"></i> Belum Mulai</button>`
+            : unlocked
+            ? `<button class="btn btn-success btn-sm fw-bold" onclick="window.watchShow('${t.id}')"><i class="fa-solid fa-play me-1"></i> Putar ${t.category === 'live' ? 'Live' : 'Replay'}</button>`
+            : `<button class="btn btn-danger btn-sm fw-bold" onclick="window.watchShow('${t.id}')"><i class="fa-solid fa-ticket me-1"></i> Tonton 1 Cash</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.watchShow = async function(id) {
+    if (!currentUserData) {
+      toast("Silakan login terlebih dahulu!", "error");
+      window.openAuth();
+      return;
     }
-}
 
-/* ACTIONS */
-function buyShow(id) {
-    if (!currentUser) return openAuthModal();
-    if ((currentUser.cash || 0) < 1) return renderPage("topup");
+    const unlocked = currentUserData.unlockedShows || [];
 
-    if (!currentUser.unlockedShows) currentUser.unlockedShows = [];
-    currentUser.cash--;
-    currentUser.unlockedShows.push(id);
-
-    const safeKey = currentUser.username.replace(/[^a-zA-Z0-9]/g, "_");
-    db.ref('users/' + safeKey).set(currentUser).then(() => openPlayer(id));
-}
-
-function addCash(amount) {
-    if (!currentUser) return openAuthModal();
-    currentUser.cash = (currentUser.cash || 0) + amount;
-    const safeKey = currentUser.username.replace(/[^a-zA-Z0-9]/g, "_");
-    db.ref('users/' + safeKey).set(currentUser).then(() => alert("Berhasil menambah " + amount + " Cash!"));
-}
-
-function adminGiveCash(username) {
-    const target = usersList.find(u => u.username === username);
-    if (target) {
-        target.cash = (target.cash || 0) + 5;
-        const safeKey = username.replace(/[^a-zA-Z0-9]/g, "_");
-        db.ref('users/' + safeKey).set(target);
+    if (unlocked.includes(id)) {
+      window.openPlayer(id, "theater");
+      return;
     }
-}
 
-function updateProfile(e) {
+    if (currentUserData.cash < 1) {
+      toast("Cash tidak mencukupi!", "error");
+      window.renderPage("topup");
+      return;
+    }
+
+    try {
+      const newCash = currentUserData.cash - 1;
+      const userRef = doc(db, "users", currentUserData.uid);
+
+      await updateDoc(userRef, {
+        cash: newCash,
+        unlockedShows: arrayUnion(id)
+      });
+
+      toast("Show berhasil dibuka!", "success");
+      window.openPlayer(id, "theater");
+    } catch (error) {
+      toast("Gagal memproses transaksi: " + error.message, "error");
+    }
+  };
+
+  function getAdminHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-user-shield text-danger me-2"></i>Admin Control Panel</h3>
+    </div>
+
+    <!-- BUAT SHOW BARU -->
+    <div class="card p-4 border-danger mb-4">
+      <h5 class="text-danger fw-bold mb-3"><i class="fa-solid fa-plus me-2"></i>Tambah Show Baru</h5>
+      <div class="row g-3">
+        <div class="col-md-3"><input id="newSetlist" class="form-control" placeholder="Nama Setlist"></div>
+        <div class="col-md-3"><input id="newTeam" class="form-control" placeholder="Nama Tim"></div>
+        <div class="col-md-2">
+          <select id="newCategory" class="form-select">
+            <option value="upcoming">UPCOMING</option>
+            <option value="live">LIVE</option>
+            <option value="replay">REPLAY</option>
+          </select>
+        </div>
+        <div class="col-md-3"><input id="newEmbedUrl" class="form-control" placeholder="Embed URL YouTube"></div>
+        <div class="col-md-1"><button class="btn btn-danger w-100 fw-bold" onclick="window.createShow()">Simpan</button></div>
+      </div>
+    </div>
+
+    <!-- KELOLA KODE REDEEM -->
+    <div class="card p-4 border-success mb-4">
+      <h5 class="text-success fw-bold mb-3"><i class="fa-solid fa-gift me-2"></i>Buat Kode Redeem</h5>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4"><input id="newRedeemCode" class="form-control text-uppercase" placeholder="Kode Promo"></div>
+        <div class="col-md-3"><input id="newRedeemCash" type="number" min="1" class="form-control" placeholder="Jumlah Cash"></div>
+        <div class="col-md-3"><input id="newRedeemQuota" type="number" min="1" class="form-control" placeholder="Kuota"></div>
+        <div class="col-md-2"><button class="btn btn-success fw-bold w-100" onclick="window.createRedeemCode()">Buat Kode</button></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-dark align-middle">
+          <thead><tr><th>Kode</th><th>Cash</th><th>Kuota</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${redeemCodes.map(r => `
+              <tr>
+                <td class="text-warning fw-bold">${escapeHTML(r.code)}</td>
+                <td>+${r.cash}</td>
+                <td>${r.usedCount || 0} / ${r.quota}</td>
+                <td><button class="btn btn-sm btn-outline-danger" onclick="window.deleteRedeemCode('${r.id}')"><i class="fa-solid fa-trash"></i></button></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INJECT CASH & UPDATE ROLE -->
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6">
+        <div class="card p-4 border-warning h-100">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-coins me-2"></i>Inject Cash User</h5>
+          <form onsubmit="window.injectCash(event)">
+            <div class="mb-3"><input id="injectUsername" class="form-control" placeholder="@username" required></div>
+            <div class="mb-3"><input id="injectAmount" type="number" min="1" class="form-control" placeholder="Jumlah Cash" required></div>
+            <button class="btn btn-warning text-dark fw-bold w-100">Proses Inject</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card p-4 border-danger h-100">
+          <h5 class="text-danger fw-bold mb-3"><i class="fa-solid fa-user-gear me-2"></i>Ubah Role User</h5>
+          <form onsubmit="window.changeRole(event)">
+            <div class="mb-3"><input id="roleUsername" class="form-control" placeholder="@username" required></div>
+            <div class="mb-3">
+              <select id="newRole" class="form-select">
+                <option value="pelanggan">Pelanggan</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button class="btn btn-danger fw-bold w-100">Update Role</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAFTAR USERS -->
+    <div class="card p-4">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-users me-2"></i>Daftar Pengguna</h5>
+      <div class="table-responsive">
+        <table class="table table-dark align-middle">
+          <thead><tr><th>Nama</th><th>Username</th><th>Email</th><th>Cash</th><th>Role</th></tr></thead>
+          <tbody>
+            ${usersList.map(u => `
+              <tr>
+                <td>${escapeHTML(u.name || "")}</td>
+                <td class="text-warning">${escapeHTML(u.username || "")}</td>
+                <td>${escapeHTML(u.email || "")}</td>
+                <td>${(u.cash || 0).toLocaleString()}</td>
+                <td><span class="badge ${u.role === "superadmin" ? "bg-danger" : u.role === "admin" ? "bg-warning text-dark" : "bg-secondary"}">${(u.role || "pelanggan").toUpperCase()}</span></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }
+
+  window.createShow = async function() {
+    if (!canAccessAdmin()) return;
+    const setlist = document.getElementById("newSetlist").value.trim();
+    const team = document.getElementById("newTeam").value.trim();
+    const category = document.getElementById("newCategory").value;
+    const embedUrl = document.getElementById("newEmbedUrl").value.trim();
+
+    if (!setlist || !team || !embedUrl) {
+      toast("Isi seluruh data show!", "error");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "theater"), {
+        setlist,
+        team,
+        category,
+        embedUrl,
+        date: category === "live" ? "Hari Ini" : "Mendatang",
+        time: "19:00 WIB",
+        viewers: category === "live" ? "10.0k" : "-"
+      });
+      toast("Show baru disimpan ke Firestore!", "success");
+      renderPage("admin");
+    } catch (e) {
+      toast("Gagal membuat show: " + e.message, "error");
+    }
+  };
+
+  window.createRedeemCode = async function() {
+    if (!canAccessAdmin()) return;
+    const code = document.getElementById("newRedeemCode").value.trim().toUpperCase();
+    const cash = parseInt(document.getElementById("newRedeemCash").value);
+    const quota = parseInt(document.getElementById("newRedeemQuota").value);
+
+    if (!code || !cash || !quota) {
+      toast("Isi semua form kode redeem!", "error");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "redeemCodes"), {
+        code,
+        cash,
+        quota,
+        usedCount: 0,
+        usedBy: []
+      });
+      toast(`Kode redeem ${code} berhasil dibuat!`, "success");
+    } catch (e) {
+      toast("Gagal membuat kode: " + e.message, "error");
+    }
+  };
+
+  window.deleteRedeemCode = async function(id) {
+    if (!canAccessAdmin()) return;
+    try {
+      await deleteDoc(doc(db, "redeemCodes", id));
+      toast("Kode redeem dihapus!", "success");
+    } catch (e) {
+      toast("Gagal menghapus: " + e.message, "error");
+    }
+  };
+
+  window.injectCash = async function(e) {
     e.preventDefault();
-    if (!currentUser) return;
-    currentUser.name = document.getElementById("setNama").value;
-    const safeKey = currentUser.username.replace(/[^a-zA-Z0-9]/g, "_");
-    db.ref('users/' + safeKey).set(currentUser).then(() => alert("Profil berhasil diupdate!"));
-}
+    if (!canAccessAdmin()) return;
 
-function openPlayer(id) {
-    let item = theaterList.find(t => t.id === id) || DEFAULT_THEATER_LIST[0];
+    let username = document.getElementById("injectUsername").value.trim().toLowerCase();
+    if (!username.startsWith("@")) username = "@" + username;
+    const amount = parseInt(document.getElementById("injectAmount").value);
+
+    const target = usersList.find(u => (u.username || "").toLowerCase() === username);
+    if (!target) {
+      toast("Username tidak ditemukan!", "error");
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, "users", target.id), {
+        cash: (target.cash || 0) + amount
+      });
+      toast(`Berhasil menambahkan ${amount} Cash!`, "success");
+    } catch (err) {
+      toast("Gagal inject: " + err.message, "error");
+    }
+  };
+
+  window.changeRole = async function(e) {
+    e.preventDefault();
+    if (!canAccessAdmin()) return;
+
+    let username = document.getElementById("roleUsername").value.trim().toLowerCase();
+    if (!username.startsWith("@")) username = "@" + username;
+    const role = document.getElementById("newRole").value;
+
+    const target = usersList.find(u => (u.username || "").toLowerCase() === username);
+    if (!target) {
+      toast("User tidak ditemukan!", "error");
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, "users", target.id), { role });
+      toast(`Role ${username} diperbarui menjadi ${role}`, "success");
+    } catch (err) {
+      toast("Gagal update role: " + err.message, "error");
+    }
+  };
+
+  function getTopupHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-coins text-warning me-2"></i>Top Up Cash</h3>
+    </div>
+    <div class="card p-4 mb-4 border-warning">
+      <h5 class="fw-bold text-warning mb-2"><i class="fa-solid fa-gift me-2"></i>Tukarkan Kode Promo</h5>
+      <form onsubmit="window.redeemCode(event)" class="d-flex gap-2">
+        <input id="userRedeemInput" class="form-control text-uppercase" placeholder="Masukkan Kode" required>
+        <button class="btn btn-warning fw-bold px-4 text-dark"><i class="fa-solid fa-check me-1"></i>Klaim</button>
+      </form>
+    </div>
+    <div class="row g-4">
+      ${[10, 50, 100].map((cash, i) => `
+        <div class="col-md-4">
+          <div class="topup-card ${i === 1 ? "popular" : ""}" onclick="window.topup(${cash})">
+            ${i === 1 ? '<span class="badge-popular">TERLARIS</span>' : ""}
+            <i class="fa-solid fa-coins text-warning fs-2"></i>
+            <h4 class="fw-bold">${cash} Cash</h4>
+            <span class="text-muted">Rp${(cash * 1000).toLocaleString()}</span>
+          </div>
+        </div>`).join("")}
+    </div>`;
+  }
+
+  window.redeemCode = async function(e) {
+    e.preventDefault();
+    if (!currentUserData) {
+      toast("Silakan login dahulu!", "error");
+      window.openAuth();
+      return;
+    }
+
+    const inputCode = document.getElementById("userRedeemInput").value.trim().toUpperCase();
+    const redeemObj = redeemCodes.find(r => r.code === inputCode);
+
+    if (!redeemObj) {
+      toast("Kode redeem tidak valid!", "error");
+      return;
+    }
+
+    if ((redeemObj.usedCount || 0) >= redeemObj.quota) {
+      toast("Kuota voucher habis!", "error");
+      return;
+    }
+
+    const usedByArr = redeemObj.usedBy || [];
+    if (usedByArr.includes(currentUserData.username)) {
+      toast("Anda telah mengklaim voucher ini!", "error");
+      return;
+    }
+
+    try {
+      // Direct Firebase Update
+      await updateDoc(doc(db, "users", currentUserData.uid), {
+        cash: currentUserData.cash + redeemObj.cash
+      });
+
+      await updateDoc(doc(db, "redeemCodes", redeemObj.id), {
+        usedCount: (redeemObj.usedCount || 0) + 1,
+        usedBy: arrayUnion(currentUserData.username)
+      });
+
+      toast(`Berhasil klaim +${redeemObj.cash} Cash!`, "success");
+    } catch (err) {
+      toast("Gagal memproses voucher: " + err.message, "error");
+    }
+  };
+
+  window.topup = async function(amount) {
+    if (!currentUserData) {
+      toast("Silakan login dahulu!", "error");
+      window.openAuth();
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, "users", currentUserData.uid), {
+        cash: currentUserData.cash + amount
+      });
+      toast(`Top Up Berhasil! Saldo +${amount} Cash.`, "success");
+    } catch (e) {
+      toast("Gagal Top Up: " + e.message, "error");
+    }
+  };
+
+  function getMemberHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-users text-danger me-2"></i>Member</h3>
+    </div>
+    <div class="row row-cols-2 row-cols-md-4 g-4">
+      ${members.map(m => `
+        <div class="col">
+          <div class="card overflow-hidden h-100">
+            <img src="${m.img}" class="w-100 member-img">
+            <div class="p-3">
+              <span class="badge bg-danger">Member</span>
+              <h5 class="fw-bold mt-2">${m.stageName}</h5>
+              <small class="text-muted">${m.fullName}</small>
+            </div>
+          </div>
+        </div>`).join("")}
+    </div>`;
+  }
+
+  function getMemberLiveHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-tower-broadcast text-danger me-2"></i>Live Member</h3>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h5 class="fw-bold">Freya Jayawardana</h5>
+          <p class="text-muted">Siaran Langsung Member</p>
+          <button class="btn btn-danger" onclick="window.openPlayer('member1','member')">
+            <i class="fa-solid fa-video me-1"></i> Tonton Live
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function getSettingsHTML() {
+    return `
+    <div class="section-title">
+      <h3 class="fw-bold"><i class="fa-solid fa-gear text-warning me-2"></i>Settings</h3>
+    </div>
+    <div class="card p-4">
+      <h5 class="fw-bold">Tema Tampilan</h5>
+      <div class="d-flex gap-3 mt-3">
+        <button class="btn btn-dark" onclick="window.setTheme('dark')"><i class="fa-solid fa-moon me-2"></i>Dark</button>
+        <button class="btn btn-light border" onclick="window.setTheme('light')"><i class="fa-solid fa-sun me-2"></i>Light</button>
+      </div>
+      <hr>
+      <h5 class="fw-bold">Warna Font</h5>
+      <div class="d-flex gap-3 mt-2">
+        <div class="settings-color active" style="background:#f1f1f1" onclick="window.setFontColor('#f1f1f1')"></div>
+        <div class="settings-color" style="background:#00d4ff" onclick="window.setFontColor('#00d4ff')"></div>
+        <div class="settings-color" style="background:#ffb703" onclick="window.setFontColor('#ffb703')"></div>
+        <div class="settings-color" style="background:#ff6b9d" onclick="window.setFontColor('#ff6b9d')"></div>
+      </div>
+    </div>`;
+  }
+
+  window.setTheme = function(theme) {
+    settings.theme = theme;
+    localStorage.setItem("fans48_settings", JSON.stringify(settings));
+    applySettings();
+    toast(theme === "dark" ? "Tema Gelap dipilih" : "Tema Terang dipilih", "success");
+    renderPage("settings");
+  };
+
+  window.setFontColor = function(color) {
+    settings.fontColor = color;
+    localStorage.setItem("fans48_settings", JSON.stringify(settings));
+    applySettings();
+    renderPage("settings");
+  };
+
+  function applySettings() {
+    document.body.classList.toggle("light-mode", settings.theme === "light");
+    document.documentElement.style.setProperty("--text-color", settings.fontColor);
+  }
+
+  window.openPlayer = function(id, type) {
+    activeShowId = id;
+    let item = type === "theater" 
+      ? theaterList.find(t => t.id === id) 
+      : { setlist: "Freya Jayawardana - Live", embedUrl: "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" };
+
+    if (!item) return;
+
     document.getElementById("playerTitle").innerText = item.setlist;
     document.getElementById("streamIframe").src = item.embedUrl;
-    new bootstrap.Modal(document.getElementById('playerModal')).show();
-}
 
-function closePlayer() {
+    listenLiveChat(id);
+    playerModal.show();
+  };
+
+  window.closePlayer = function() {
     document.getElementById("streamIframe").src = "";
-}
+    if (activeChatUnsubscribe) {
+      activeChatUnsubscribe();
+      activeChatUnsubscribe = null;
+    }
+  };
 
-function sendMessage(e) {
+  function listenLiveChat(showId) {
+    const chatBox = document.getElementById("chatContainer");
+    chatBox.innerHTML = '<div class="text-muted small">Menghubungkan ke server obrolan...</div>';
+
+    const chatQuery = query(collection(db, "theater", showId, "chats"), orderBy("timestamp", "asc"));
+
+    if (activeChatUnsubscribe) activeChatUnsubscribe();
+
+    activeChatUnsubscribe = onSnapshot(chatQuery, (snapshot) => {
+      chatBox.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "small mb-2";
+        div.innerHTML = `<span class="text-warning fw-bold">${escapeHTML(data.sender || "Anonim")}:</span> <span>${escapeHTML(data.message || "")}</span>`;
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  }
+
+  window.sendMessage = async function(e) {
     e.preventDefault();
-    if (!currentUser) return openAuthModal();
-    const input = document.getElementById("chatInput");
-    if (!input.value.trim()) return;
+    if (!currentUserData) {
+      toast("Harap login untuk mengirim pesan!", "error");
+      return;
+    }
 
-    const div = document.createElement("div");
-    div.className = "small mb-2 text-white";
-    div.innerHTML = `<span class="text-warning fw-bold">${currentUser.name}:</span> <span>${input.value}</span>`;
-    document.getElementById("chatContainer").appendChild(div);
-    input.value = "";
-}
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if (!message || !activeShowId) return;
+
+    try {
+      await addDoc(collection(db, "theater", activeShowId, "chats"), {
+        sender: currentUserData.name,
+        message,
+        timestamp: serverTimestamp()
+      });
+      input.value = "";
+    } catch (err) {
+      toast("Gagal mengirim pesan: " + err.message, "error");
+    }
+  };
+
+  function toast(message, type) {
+    const el = document.createElement("div");
+    el.className = "position-fixed bottom-0 end-0 p-3";
+    el.style.zIndex = "99999";
+    el.innerHTML = `<div class="alert ${type === "success" ? "alert-success" : "alert-danger"} shadow">${escapeHTML(message)}</div>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g, tag => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;"
+    }[tag]));
+  }
 </script>
+
 </body>
 </html>
