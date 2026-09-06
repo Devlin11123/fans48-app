@@ -591,10 +591,10 @@ Sudah punya akun?
   // Exposed Global Window Methods
   window.openAuth = function() {
   window.toggleAuth("login");
-  const modalElement = document.getElementById("authModal");
-  const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-  modalInstance.show();
-};
+  const modalEl = document.getElementById("authModal");
+  const modalObj = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  modalObj.show();
+}
 
   window.toggleAuth = function(type) {
     const login = document.getElementById("loginForm");
