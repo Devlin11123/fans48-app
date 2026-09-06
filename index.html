@@ -528,17 +528,28 @@ Sudah punya akun?
   let authModal;
   let playerModal;
 
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     authModal = new bootstrap.Modal(document.getElementById("authModal"));
     playerModal = new bootstrap.Modal(document.getElementById("playerModal"));
 
     applySettings();
-    initRealtimeListeners();
+    renderPage("home"); // Langsung muat halaman utama
+    updateAuthUI();     // Langsung muat tombol login default
+
+    try {
+      initRealtimeListeners();
+    } catch (e) {
+      console.error("Firebase Listener Error:", e);
+    }
 
     onAuthStateChanged(auth, async (user) => {
       firebaseUser = user;
       if (user) {
-        await fetchUserData(user.uid);
+        try {
+          await fetchUserData(user.uid);
+        } catch (e) {
+          console.error("Fetch User Error:", e);
+        }
       } else {
         currentUserData = null;
       }
