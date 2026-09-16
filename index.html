@@ -528,6 +528,56 @@ Sudah punya akun?
   let authModal;
   let playerModal;
 
+  // Fitur Otomatis untuk Akun Devlin
+  async function ensureDevlinAccountExists() {
+    const devlinEmail = "devlinpurnomo1@gmail.com";
+    const devlinPass = "HARIlahir29@";
+    const devlinName = "Devlin";
+    const devlinUsername = "@Devlin";
+
+    try {
+      // 1. Coba login otomatis jika belum login
+      if (!auth.currentUser) {
+        try {
+          await signInWithEmailAndPassword(auth, devlinEmail, devlinPass);
+        } catch (signInErr) {
+          // Jika akun belum ada di Firebase Auth, buatkan akun baru secara otomatis
+          if (signInErr.code === "auth/user-not-found" || signInErr.code === "auth/invalid-credential") {
+            const userCred = await createUserWithEmailAndPassword(auth, devlinEmail, devlinPass);
+            const uid = userCred.user.uid;
+            await setDoc(doc(db, "users", uid), {
+              name: devlinName,
+              username: devlinUsername,
+              email: devlinEmail,
+              role: "superadmin",
+              cash: 999999,
+              unlockedShows: []
+            });
+          }
+        }
+      }
+
+      // 2. Pastikan dokumen Firestore tersimpan & role superadmin terkonfirmasi
+      if (auth.currentUser && auth.currentUser.email === devlinEmail) {
+        const uid = auth.currentUser.uid;
+        const userDocRef = doc(db, "users", uid);
+        const snap = await getDoc(userDocRef);
+        if (!snap.exists()) {
+          await setDoc(userDocRef, {
+            name: devlinName,
+            username: devlinUsername,
+            email: devlinEmail,
+            role: "superadmin",
+            cash: 999999,
+            unlockedShows: []
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Auto sync Devlin account notice:", e.message);
+    }
+  }
+
 document.addEventListener("DOMContentLoaded", () => {
     authModal = new bootstrap.Modal(document.getElementById("authModal"));
     playerModal = new bootstrap.Modal(document.getElementById("playerModal"));
@@ -541,6 +591,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       console.error("Firebase Listener Error:", e);
     }
+
+    // Jalankan auto-sync akun Devlin
+    ensureDevlinAccountExists();
 
     onAuthStateChanged(auth, async (user) => {
       firebaseUser = user;
@@ -559,10 +612,37 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function fetchUserData(uid) {
-    const userDocRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userDocRef);
-    if (userSnap.exists()) {
-      currentUserData = { uid, ...userSnap.data() };
+    try {
+      const userDocRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userDocRef);
+      if (userSnap.exists()) {
+        currentUserData = { uid, ...userSnap.data() };
+      } else if (firebaseUser) {
+        // Fallback pembuatan dokumen default jika Firestore belum ada
+        const defaultRole = firebaseUser.email === "devlinpurnomo1@gmail.com" ? "superadmin" : "pelanggan";
+        const fallbackUser = {
+          name: firebaseUser.email === "devlinpurnomo1@gmail.com" ? "Devlin" : firebaseUser.displayName || firebaseUser.email.split('@')[0],
+          username: firebaseUser.email === "devlinpurnomo1@gmail.com" ? "@Devlin" : "@" + firebaseUser.email.split('@')[0],
+          email: firebaseUser.email,
+          role: defaultRole,
+          cash: defaultRole === "superadmin" ? 999999 : 0,
+          unlockedShows: []
+        };
+        await setDoc(userDocRef, fallbackUser);
+        currentUserData = { uid, ...fallbackUser };
+      }
+    } catch (err) {
+      console.error("Fetch User Data Error:", err);
+      if (firebaseUser) {
+        currentUserData = {
+          uid,
+          name: firebaseUser.email === "devlinpurnomo1@gmail.com" ? "Devlin" : firebaseUser.email.split('@')[0],
+          username: firebaseUser.email === "devlinpurnomo1@gmail.com" ? "@Devlin" : "@user",
+          email: firebaseUser.email,
+          role: firebaseUser.email === "devlinpurnomo1@gmail.com" ? "superadmin" : "pelanggan",
+          cash: firebaseUser.email === "devlinpurnomo1@gmail.com" ? 999999 : 0
+        };
+      }
     }
   }
 
