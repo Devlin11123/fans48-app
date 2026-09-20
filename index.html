@@ -1233,21 +1233,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  window.topup = async function(amount) {
+ // Variabel untuk menyimpan jumlah nominal yang dipilih user
+  let selectedTopupAmount = 0;
+
+  window.topup = function(amount) {
     if (!currentUserData) {
       toast("Silakan login dahulu!", "error");
       window.openAuth();
       return;
     }
-
-    try {
-      await updateDoc(doc(db, "users", currentUserData.uid), {
-        cash: currentUserData.cash + amount
-      });
-      toast(`Top Up Berhasil! Saldo +${amount} Cash.`, "success");
-    } catch (e) {
-      toast("Gagal Top Up: " + e.message, "error");
-    }
+    // Simpan jumlah cash yang dipilih & buka modal QRIS
+    selectedTopupAmount = amount;
+    bukaQrisModal();
   };
 
   function getMemberHTML() {
@@ -1478,20 +1475,31 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 <script>
-  // Fungsi untuk memunculkan pop-up QRIS
+  // Membuka modal QRIS
   function bukaQrisModal() {
     document.getElementById('qrisModal').style.display = 'flex';
   }
 
-  // Fungsi untuk menutup pop-up QRIS
+  // Menutup modal QRIS
   function tutupQrisModal() {
     document.getElementById('qrisModal').style.display = 'none';
   }
 
-  // Fungsi aksi saat tombol 'Konfirmasi Top Up' diklik
-  function prosesKonfirmasiTopUp() {
-    alert('Konfirmasi top up berhasil dikirim! Silakan tunggu verifikasi admin.');
-    tutupQrisModal();
+  // Proses tambah saldo saat menekan 'Konfirmasi Top Up' di modal QRIS
+  async function prosesKonfirmasiTopUp() {
+    if (!selectedTopupAmount || !currentUserData) return;
+
+    try {
+      // Update saldo cash di Firebase
+      await updateDoc(doc(db, "users", currentUserData.uid), {
+        cash: (currentUserData.cash || 0) + selectedTopupAmount
+      });
+
+      toast(`Konfirmasi berhasil! Saldo +${selectedTopupAmount} Cash telah ditambahkan.`, "success");
+      tutupQrisModal();
+    } catch (e) {
+      toast("Gagal memproses top up: " + e.message, "error");
+    }
   }
 </script>
 </body>
