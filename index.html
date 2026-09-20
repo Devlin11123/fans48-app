@@ -703,57 +703,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  document.getElementById("loginForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      authModal.hide();
-      toast("Login berhasil!", "success");
-    } catch (error) {
-      toast("Gagal login: " + error.message, "error");
-    }
-  });
-
-  document.getElementById("registerForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const name = document.getElementById("regName").value.trim();
-    let username = document.getElementById("regUsername").value.trim().toLowerCase();
-    const email = document.getElementById("regEmail").value.trim().toLowerCase();
-    const password = document.getElementById("regPassword").value;
-
-    if (!username.startsWith("@")) username = "@" + username;
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      const newUser = {
-        name,
-        username,
-        email,
-        role: "pelanggan",
-        cash: 0,
-        unlockedShows: []
-      };
-
-      await setDoc(doc(db, "users", uid), newUser);
-      currentUserData = { uid, ...newUser };
-
-      authModal.hide();
-      toast("Akun berhasil dibuat!", "success");
-      renderPage("home");
-    } catch (error) {
-      toast("Gagal pendaftaran: " + error.message, "error");
-    }
-  });
-
-  window.logout = async function() {
-    try {
-      await signOut(auth);
-      toast("Berhasil keluar.", "success");
       renderPage("home");
     } catch (error) {
       toast("Gagal keluar: " + error.message, "error");
